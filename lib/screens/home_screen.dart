@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'homepage_screen.dart';
+import 'schedule_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -9,11 +12,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   // Danh sách các màn hình liên quan đến từng mục trong Bottom Navigation Bar
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text('Home page'),
-    Text('Courses Page'),
-    Text('Mock Exams Page'),
-    Text('Profile Page')
+  static final List<Widget> _widgetOptions = <Widget>[
+    HomepageScreen(),
+    ScheduleScreen(),
+    ProfileScreen()
   ];
 
   void _onItemTapped(int index) {
@@ -35,15 +37,11 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'Homepage',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: 'Courses',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.edit),
-            label: 'Mock Exams',
+            icon: Icon(Icons.schedule),
+            label: 'Schedule',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -52,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
     );
