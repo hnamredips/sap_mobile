@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/register_screen.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -18,6 +20,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home': (context) => HomeScreen(),
         '/login': (context) => LoginScreen(),
+        '/register': (context) => RegisterScreen(),
       },
       );
   }
@@ -45,12 +48,6 @@ class MainScreen extends StatelessWidget {
                 Navigator.pushNamed(context, '/register');
               },
               child: Text('Register'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/forgot-password');
-              },
-              child: Text('Forgot Password'),
             ),
           ],
         ),
