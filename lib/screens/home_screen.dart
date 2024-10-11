@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SAP-learning App'),
+        title: Text(''),
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
@@ -35,15 +35,11 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'Homepage',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: 'Courses',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.edit),
-            label: 'Mock Exams',
+            icon: Icon(Icons.schedule),
+            label: 'Schedule',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -52,9 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
     );
   }
 }
+  
+
