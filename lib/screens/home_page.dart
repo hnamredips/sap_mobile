@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:sap_mobile/screens/view_all_material.dart';
 // import 'test.dart';
 
 
@@ -74,7 +75,7 @@ class HomePage extends StatelessWidget {
                       // Điều hướng sang trang TestPage trong test.dart
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HomePage()), // Điều hướng đến TestPage
+                        MaterialPageRoute(builder: (context) => ViewAllMaterial()), // Điều hướng đến TestPage
                       );
                     },
                     child: Text(
