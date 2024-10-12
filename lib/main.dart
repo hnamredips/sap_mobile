@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/home_page.dart';
 import 'screens/courses_page.dart';
+import 'screens/courses_page.dart';
+import 'screens/view_all_material.dart';
 
 void main() {
   runApp(MyApp()); // Chạy ứng dụng

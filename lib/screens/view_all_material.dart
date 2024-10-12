@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sap_mobile/screens/home_page.dart';
+import 'package:sap_mobile/screens/home_screen.dart';
+import 'moduleMM.dart'; // Import các trang module bạn đã tạo
 
 class ViewAllMaterial extends StatefulWidget {
   @override
@@ -6,19 +9,16 @@ class ViewAllMaterial extends StatefulWidget {
 }
 
 class _TestPageState extends State<ViewAllMaterial> {
-  // Danh sách 24 modules SAP
   final List<String> modules = [
     'MM', 'PP', 'SD', 'FI', 'CO', 'PM', 'HCM', 'BI',
     'QM', 'PS', 'HR', 'SCM', 'CRM', 'PLM', 'SRM', 'GTS',
     'EHS', 'IS', 'BW', 'MDG', 'S4HANA', 'FSCM', 'TM', 'IBP'
   ];
 
-  // Biến để lưu trạng thái hiển thị: hiển thị toàn bộ hay chỉ 10 module
   bool showAll = false;
 
   @override
   Widget build(BuildContext context) {
-    // Xác định số lượng module cần hiển thị
     List<String> modulesToShow = showAll ? modules : modules.sublist(0, 10);
 
     return Scaffold(
@@ -27,7 +27,10 @@ class _TestPageState extends State<ViewAllMaterial> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Quay lại trang trước
+            // Điều hướng về ViewAllMaterial khi nhấn nút trở lại
+            Navigator.pop(context);
+           //đây nè anh
+           //Sửa y chang luôn, nút back về thì dùng cái nay
           },
         ),
       ),
@@ -35,25 +38,28 @@ class _TestPageState extends State<ViewAllMaterial> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            // Sử dụng Expanded để GridView chiếm khoảng trống còn lại mà không tràn
             Expanded(
               child: GridView.count(
-                crossAxisCount: 2, // Hiển thị 2 module trên mỗi dòng
-                crossAxisSpacing: 12, // Khoảng cách giữa các module theo chiều ngang
-                mainAxisSpacing: 12, // Khoảng cách giữa các module theo chiều dọc
-                childAspectRatio: 2.5, // Tỷ lệ giữa chiều rộng và chiều cao
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 2.5,
                 children: modulesToShow.map((module) {
-                  return buildModuleBox(module);
+                  return GestureDetector(
+                    onTap: () {
+                      navigateToModule(module);
+                    },
+                    child: buildModuleBox(module),
+                  );
                 }).toList(),
               ),
             ),
-            SizedBox(height: 12), // Khoảng cách giữa GridView và nút
-            // Nút hiển thị thêm
+            SizedBox(height: 12),
             Center(
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    showAll = !showAll; // Thay đổi trạng thái hiển thị
+                    showAll = !showAll;
                   });
                 },
                 child: Text(showAll ? 'Hiển thị ít hơn' : 'Hiển thị thêm'),
@@ -65,17 +71,30 @@ class _TestPageState extends State<ViewAllMaterial> {
     );
   }
 
-  // Hàm tạo một ô module
+  // Hàm điều hướng đến trang module tương ứng
+  void navigateToModule(String module) {
+    if (module == 'MM') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ModuleMM()), // Điều hướng đến trang module MM
+      );
+    } else if (module == 'PP') {
+      // Điều hướng đến trang module PP
+      // Navigator.push(context, MaterialPageRoute(builder: (context) => ModulePP()));
+    }
+    // Thêm các điều kiện cho các module khác
+  }
+
   Widget buildModuleBox(String module) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white, // Màu nền của ô
-        borderRadius: BorderRadius.circular(8), // Bo góc cho ô
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12, // Màu bóng đổ
-            blurRadius: 5, // Độ mờ của bóng
-            offset: Offset(0, 3), // Vị trí bóng đổ
+            color: Colors.black12,
+            blurRadius: 5,
+            offset: Offset(0, 3),
           ),
         ],
       ),
@@ -83,8 +102,8 @@ class _TestPageState extends State<ViewAllMaterial> {
         child: Text(
           module,
           style: TextStyle(
-            fontSize: 20, // Kích thước chữ
-            fontWeight: FontWeight.bold, // Chữ in đậm
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),

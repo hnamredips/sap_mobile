@@ -1,7 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:sap_mobile/screens/view_all_material.dart';
-// import 'test.dart';
 
 
 class HomePage extends StatelessWidget {
@@ -9,7 +8,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Xin chào, Đạt"),
+        title: Text("Hi, Đạt"),
         actions: [
           IconButton(
             icon: Icon(Icons.notifications),
@@ -46,7 +45,7 @@ class HomePage extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Lịch học hôm nay', style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text('Study schedule', style: TextStyle(fontWeight: FontWeight.bold)),
                           Text('Tất cả', style: TextStyle(color: Colors.blue)),
                         ],
                       ),
