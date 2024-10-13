@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sap_mobile/screens/view_all_material.dart';
-
+import 'homepage_screen.dart';
+import 'schedule_screen.dart';
+import 'profile_screen.dart';
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -9,12 +11,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  // Danh sách các màn hình liên quan đến từng mục trong Bottom Navigation Bar
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text('Home page'),
-    Text('Courses Page'),
-    Text('Mock Exams Page'),
-    Text('Profile Page')
+  // Danh sach cac man hinh lien quan den tung muc trong Bottom Nagigation Bar
+  static final List<Widget> _widgetOptions = <Widget>[
+    HomepageScreen(),
+    ScheduleScreen(),
+    ProfileScreen()
   ];
 
   void _onItemTapped(int index) {
