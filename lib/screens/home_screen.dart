@@ -11,7 +11,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  // Danh sách các màn hình liên quan đến từng mục trong Bottom Navigation Bar
+  // Danh sach cac man hinh lien quan den tung muc trong Bottom Nagigation Bar
   static final List<Widget> _widgetOptions = <Widget>[
     HomepageScreen(),
     ScheduleScreen(),

@@ -46,15 +46,15 @@ class MainScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Hình ảnh trên cùng
+              // Hinh anh tren cung 
               Spacer(),
               Image.asset(
-                'assets/images/saplearn_logo(1).png', // Thay đường dẫn ảnh của bạn
+                'assets/images/saplearn_logo(1).png', // Duong dan hinh anh 
                 height: 200,
               ),
               SizedBox(height: 20),
 
-              // Tiêu đề
+              // Tieu de
               Text(
                 'Create your own study plan',
                 style: TextStyle(
@@ -65,7 +65,7 @@ class MainScreen extends StatelessWidget {
               ),
               SizedBox(height: 10),
 
-              // Mô tả
+              // Mo ta 
               Text(
                 'Study according to the study plan, make study more motivated',
                 style: TextStyle(fontSize: 16, color: Colors.grey),
@@ -73,7 +73,7 @@ class MainScreen extends StatelessWidget {
               ),
               Spacer(),
 
-              // Nút Sign Up
+              // Sign up button 
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -86,14 +86,14 @@ class MainScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    backgroundColor: Color(0xFF275998), // Màu nền
-                    foregroundColor: Color.fromARGB(255, 255, 255, 255), // Màu chữ của Sign Up
+                    backgroundColor: Color(0xFF275998), // Mau nen 
+                    foregroundColor: Color.fromARGB(255, 255, 255, 255), // Sign up color 
                   ),
                 ),
               ),
               SizedBox(height: 10),
 
-              // Nút Log In
+              // Log in button 
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
@@ -106,8 +106,8 @@ class MainScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    side: BorderSide(color: Color(0xFF275998)), // Viền nút
-                    foregroundColor: Color(0xFF345894), // Màu chữ của Log In
+                    side: BorderSide(color: Color(0xFF275998)), // Vien nut Log in 
+                    foregroundColor: Color(0xFF345894), // Mau chu Log in 
                   ),
                 ),
               ),
