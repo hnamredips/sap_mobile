@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sap_mobile/screens/enroll.dart';
 import 'package:sap_mobile/screens/view_all_material.dart'; // Import view_all_material.dart
 
 class ModuleMM extends StatelessWidget {
@@ -145,6 +146,10 @@ class CertificateDetail extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => EnrollPage()), // Điều hướng đến TestPage
+                      );
                     // Logic khi nhấn "Đăng ký"
                   },
                   child: Text('Đăng ký'),

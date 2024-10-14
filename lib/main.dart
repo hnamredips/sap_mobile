@@ -156,11 +156,6 @@ class _HomeScreenState extends State<HomeScreen> {
         // Thêm logo nhỏ ở góc trái AppBar
         leading: Padding(
           padding: const EdgeInsets.all(8.0), // Khoảng cách giữa logo và các cạnh
-          child: Image.asset(
-            'assets/logo.jpg', // Đường dẫn đến logo
-            fit: BoxFit.contain, // Đảm bảo logo không bị méo
-            height: 32, // Chiều cao của logo
-          ),
         ),
       ),
       body: Center(
