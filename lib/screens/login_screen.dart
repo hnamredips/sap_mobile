@@ -1,12 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final Dio _dio = Dio(); // Khởi tạo Dio
 
-  void _login(BuildContext context) {
-    // Xử lý đăng nhập
-    Navigator.pushReplacementNamed(context, '/home');
+  void _login(BuildContext context) async {
+    final String username = _usernameController.text;
+    final String password = _passwordController.text;
+
+    // Kiểm tra thông tin đăng nhập
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter username and password')),
+      );
+      return;
+    }
+
+    try {
+      // Gọi API để đăng nhập
+      final response = await _dio.post(
+        'http://localhost:5250/api/User/login-app',
+        data: {
+          'username': username,
+          'password': password,
+        },
+      );
+
+      // Kiểm tra mã trạng thái
+      if (response.statusCode == 200) {
+        // Nếu đăng nhập thành công
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login successful!')),
+        );
+        Navigator.pushReplacementNamed(
+            context, '/home'); // Chuyển đến trang chính
+      } else {
+        // Nếu đăng nhập không thành công
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed! Try again.')),
+        );
+      }
+    } catch (e) {
+      // Xử lý ngoại lệ
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Incorrect username or password. Try again.')),
+      );
+    }
   }
 
   void _loginWithGoogle() {
