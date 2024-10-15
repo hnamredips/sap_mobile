@@ -4,7 +4,7 @@ import 'screens/home_page.dart';
 import 'screens/courses_page.dart';
 import 'screens/courses_page.dart';
 import 'screens/view_all_material.dart';
-import 'screens/homepage_screen.dart';
+import 'screens/home_page.dart';
 import 'screens/schedule_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/login_screen.dart';
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       home: MainScreen(),
       routes: {
         '/home': (context) => HomeScreen(),
-        '/homepage': (context) => HomepageScreen(),
+        '/homepage': (context) => HomePage(),
         '/schedule': (context) => ScheduleScreen(),
         '/profile': (context) => ProfileScreen(),
         '/login': (context) => LoginScreen(),
