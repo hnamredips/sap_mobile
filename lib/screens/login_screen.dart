@@ -86,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _usernameController,
                       decoration: InputDecoration(
-                        labelText: 'Username',
+                        labelText: 'Your email or username',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
