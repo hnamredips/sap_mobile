@@ -10,9 +10,30 @@ class ViewAllMaterial extends StatefulWidget {
 
 class _TestPageState extends State<ViewAllMaterial> {
   final List<String> modules = [
-    'MM', 'PP', 'SD', 'FI', 'CO', 'PM', 'HCM', 'BI',
-    'QM', 'PS', 'HR', 'SCM', 'CRM', 'PLM', 'SRM', 'GTS',
-    'EHS', 'IS', 'BW', 'MDG', 'S4HANA', 'FSCM', 'TM', 'IBP'
+    'MM',
+    'PP',
+    'SD',
+    'FI',
+    'CO',
+    'PM',
+    'HCM',
+    'BI',
+    'QM',
+    'PS',
+    'HR',
+    'SCM',
+    'CRM',
+    'PLM',
+    'SRM',
+    'GTS',
+    'EHS',
+    'IS',
+    'BW',
+    'MDG',
+    'S4HANA',
+    'FSCM',
+    'TM',
+    'IBP'
   ];
 
   bool showAll = false;
@@ -27,10 +48,7 @@ class _TestPageState extends State<ViewAllMaterial> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            // Điều hướng về ViewAllMaterial khi nhấn nút trở lại
             Navigator.pop(context);
-           //đây nè anh
-           //Sửa y chang luôn, nút back về thì dùng cái nay
           },
         ),
       ),
@@ -76,7 +94,8 @@ class _TestPageState extends State<ViewAllMaterial> {
     if (module == 'MM') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ModuleMM()), // Điều hướng đến trang module MM
+        MaterialPageRoute(
+            builder: (context) => ModuleMM()), // Điều hướng đến trang module MM
       );
     } else if (module == 'PP') {
       // Điều hướng đến trang module PP

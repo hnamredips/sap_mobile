@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sap_mobile/screens/purchase_overview.dart';
 
 class EnrollPage extends StatefulWidget {
   @override
@@ -7,6 +8,14 @@ class EnrollPage extends StatefulWidget {
 
 class _EnrollPageState extends State<EnrollPage> {
   String? selectedClass; // Biến lưu trạng thái của lớp được chọn
+  String? selectedTime;
+  String? selectedStudents;
+  String? selectedLocation;
+  String? selectedFee;
+  String? selectediddcertificate;
+  String? selectedlevel;
+  String? selectedsessions;
+  String? selectedduration;
 
   @override
   Widget build(BuildContext context) {
@@ -38,13 +47,25 @@ class _EnrollPageState extends State<EnrollPage> {
                         time: '16h - 17h30 thứ 5\n16h - 17h30 thứ 7',
                         students: '17 / 30',
                         location: 'Google Meet',
-                        fee: '2.500.000 vnd/khóa',
+                        fee: '2.500.000 vnđ/khóa',
                         isSelected: selectedClass == 'C_TS462_1',
+                        iddcertificate:'C_TS462_MM' ,
+                        level:'Intermediate' ,
+                        sessions:'10' ,
+                        duration:'5 tuần' ,
                         onTap: () {
                           setState(() {
                             selectedClass = 'C_TS462_1';
+                            selectedTime = '16h - 17h30 thứ 5\n16h - 17h30 thứ 7';
+                            selectedStudents = '17 / 30';
+                            selectedLocation = 'Google Meet';
+                            selectedFee = '2.500.000 vnđ';
+                            selectediddcertificate = 'C_TS462_MM';
+                            selectedlevel = 'Intermediate';
+                            selectedsessions = '10';
+                            selectedduration = '5 tuần';
                           });
-                        },
+                        }, 
                       ),
                       ClassCard(
                         title: 'C_TS462_2',
@@ -52,13 +73,25 @@ class _EnrollPageState extends State<EnrollPage> {
                         time: '16h - 17h30 thứ 2\n19h - 20h30 thứ 6',
                         students: '17 / 30',
                         location: 'Phòng 210 NVH SV',
-                        fee: '3.700.000 vnd/khóa',
+                        fee: '3.700.000 vnđ/khóa',
+                        iddcertificate: 'C_TS462_MM',
+                        level:'Intermediate' ,
+                        sessions:'10' ,
+                        duration:'5 tuần' ,
                         isSelected: selectedClass == 'C_TS462_2',
                         onTap: () {
                           setState(() {
                             selectedClass = 'C_TS462_2';
+                            selectedTime = '16h - 17h30 thứ 2\n19h - 20h30 thứ 6';
+                            selectedStudents = '17 / 30';
+                            selectedLocation = 'Phòng 210 NVH SV';
+                            selectedFee = '3.700.000 vnđ';
+                            selectediddcertificate = 'C_TS462_MM';
+                            selectedlevel = 'Intermediate';
+                            selectedsessions = '10';
+                            selectedduration = '5 tuần';
                           });
-                        },
+                        }, 
                       ),
                     ],
                   ),
@@ -72,12 +105,24 @@ class _EnrollPageState extends State<EnrollPage> {
             child: ElevatedButton(
               onPressed: selectedClass != null
                   ? () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => EnrollPage()), // Điều hướng đến TestPage
-                      // );
-                      // Code khi người dùng nhấn 'Tiếp tục'
+                      // Điều hướng đến PurchaseOverviewPage với các giá trị đã chọn
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CombinedPurchasePage(
+                            className: selectedClass!,
+                            schedule: selectedTime!,
+                            students: selectedStudents!,
+                            location: selectedLocation!,
+                            price: selectedFee!,
+                            iddcertificate: selectediddcertificate!,
+                            level: selectedlevel!,
+                            sessions: selectedsessions!,
+                            duration: selectedduration!,
+                            // idcertificate: selectedIDcertificate!,
+                          ),
+                        ),
+                      );
                     }
                   : null, // Nếu chưa chọn lớp, nút sẽ bị disable
               child: Text('Tiếp tục'),
@@ -106,6 +151,10 @@ class ClassCard extends StatelessWidget {
   final String students;
   final String location;
   final String fee;
+  final String iddcertificate;
+  final String level;
+  final String sessions;
+  final String duration;
   final bool isSelected; // Biến xác định thẻ có được chọn hay không
   final VoidCallback onTap; // Hàm gọi lại khi người dùng nhấn vào thẻ
 
@@ -117,6 +166,10 @@ class ClassCard extends StatelessWidget {
     required this.students,
     required this.location,
     required this.fee,
+    required this.iddcertificate,
+    required this.level,
+    required this.sessions,
+    required this.duration,
     required this.isSelected,
     required this.onTap,
   }) : super(key: key);

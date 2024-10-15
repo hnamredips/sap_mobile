@@ -202,8 +202,8 @@ class HomePage extends StatelessWidget {
   }
 }
 
-void main() {
-  runApp(MaterialApp(
-    home: HomePage(),
-  ));
-}
+// void main() {
+//   runApp(MaterialApp(
+//     home: HomePage(),
+//   ));
+// }
