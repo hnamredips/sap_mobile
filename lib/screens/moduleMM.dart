@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sap_mobile/screens/enroll.dart';
+import 'package:sap_mobile/screens/quiz.dart';
 import 'package:sap_mobile/screens/view_all_material.dart'; // Import view_all_material.dart
 import 'package:sap_mobile/screens/purchase_overview.dart';
 
@@ -172,9 +173,13 @@ class CertificateDetail extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // Logic khi nhấn "Test thử"
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Quiz()),
+                    );
+                    // Logic khi nhấn "Bài kiểm tra"
                   },
-                  child: Text('Flashcard'),
+                  child: Text('Quiz'),
                 ),
                 ElevatedButton(
                 onPressed: () {

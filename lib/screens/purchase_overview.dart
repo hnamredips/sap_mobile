@@ -101,7 +101,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
               child: Text('CONTINUE', style: TextStyle(fontSize: 18)),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
-                backgroundColor: Colors.orange,
+                backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
               ),
             ),
@@ -125,7 +125,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
           CircleAvatar(
             radius: 20,
             backgroundColor:
-                _currentStep == step ? Colors.orange : Colors.grey[300],
+                _currentStep == step ? Colors.blue : Colors.grey[300],
             child: Text(
               title[0],
               style: TextStyle(
@@ -138,7 +138,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
           Text(
             title,
             style: TextStyle(
-              color: _currentStep == step ? Colors.orange : Colors.grey,
+              color: _currentStep == step ? Colors.blue : Colors.grey,
             ),
           ),
         ],
@@ -242,24 +242,24 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
 
   // Trang Confirmation
   Widget buildConfirmationPage() {
-  return Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center, // Căn giữa các widget theo chiều dọc
-      children: [
-        Image.asset(
-          'assets/images/done.png', // Đường dẫn hình ảnh
-          height: 200,
-        ),
-        SizedBox(height: 20), // Khoảng cách giữa hình ảnh và văn bản
-        Text(
-          'Successful purchase!',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-      ],
-    ),
-  );
-}
-
+    return Center(
+      child: Column(
+        mainAxisAlignment:
+            MainAxisAlignment.center, // Căn giữa các widget theo chiều dọc
+        children: [
+          Image.asset(
+            'assets/images/done.png', // Đường dẫn hình ảnh
+            height: 200,
+          ),
+          SizedBox(height: 20), // Khoảng cách giữa hình ảnh và văn bản
+          Text(
+            'Successful purchase!',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
 
   // Chi tiết hàng trong trang Overview
   Widget buildDetailRow(String label, String value) {
@@ -287,7 +287,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
         trailing: Radio<String>(
           value: label,
           groupValue: selectedValue,
-          activeColor: Colors.orange,
+          activeColor: Colors.blue,
           onChanged: (String? value) {
             onSelect();
           },
