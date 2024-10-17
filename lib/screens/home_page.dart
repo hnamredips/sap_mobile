@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:sap_mobile/screens/view_all_material.dart';
-
+import 'package:sap_mobile/screens/search_screen.dart'; // Import SearchScreen
 
 class HomePage extends StatelessWidget {
   @override
@@ -16,13 +16,21 @@ class HomePage extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        SearchScreen()), // Điều hướng đến SearchScreen
+              );
+            },
           ),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView( // Thêm Scroll để có thể cuộn màn hình
+        child: SingleChildScrollView(
+          // Thêm Scroll để có thể cuộn màn hình
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -30,7 +38,8 @@ class HomePage extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 225, 224, 224), // Màu nền nhạt cho khung tổng thể
+                  color: const Color.fromARGB(
+                      255, 225, 224, 224), // Màu nền nhạt cho khung tổng thể
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -45,7 +54,8 @@ class HomePage extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Study schedule', style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text('Study schedule',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                           Text('Tất cả', style: TextStyle(color: Colors.blue)),
                         ],
                       ),
@@ -53,9 +63,11 @@ class HomePage extends StatelessWidget {
                     SizedBox(height: 16),
 
                     // Schedule Items
-                    buildScheduleItem('SAP311', 'Online 514', '12:30 - 14:45', true),
+                    buildScheduleItem(
+                        'SAP311', 'Online 514', '12:30 - 14:45', true),
                     SizedBox(height: 10),
-                    buildScheduleItem('SAP323', 'Offline 611', '18:30 - 20:00', false),
+                    buildScheduleItem(
+                        'SAP323', 'Offline 611', '18:30 - 20:00', false),
                   ],
                 ),
               ),
@@ -63,7 +75,8 @@ class HomePage extends StatelessWidget {
 
               // Categories Slider with "View All" button
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Đặt hai phần tử cách xa nhau
+                mainAxisAlignment: MainAxisAlignment
+                    .spaceBetween, // Đặt hai phần tử cách xa nhau
                 children: [
                   Text(
                     'Categories',
@@ -74,7 +87,9 @@ class HomePage extends StatelessWidget {
                       // Điều hướng sang trang TestPage trong test.dart
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ViewAllMaterial()), // Điều hướng đến TestPage
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ViewAllMaterial()), // Điều hướng đến TestPage
                       );
                     },
                     child: Text(
@@ -149,7 +164,8 @@ class HomePage extends StatelessWidget {
                           ],
                         ),
                         child: Center(
-                          child: Text('Certificate $i', style: TextStyle(fontSize: 16)),
+                          child: Text('Certificate $i',
+                              style: TextStyle(fontSize: 16)),
                         ),
                       );
                     },
@@ -164,7 +180,8 @@ class HomePage extends StatelessWidget {
   }
 
   // Function to build schedule item
-  Widget buildScheduleItem(String subjectCode, String room, String time, bool isOnline) {
+  Widget buildScheduleItem(
+      String subjectCode, String room, String time, bool isOnline) {
     return Container(
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
