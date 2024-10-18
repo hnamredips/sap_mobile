@@ -10,16 +10,35 @@ class ViewAllMaterial extends StatefulWidget {
 
 class _TestPageState extends State<ViewAllMaterial> {
   final List<String> modules = [
-    'MM', 'PP', 'SD', 'FI', 'CO', 'PM', 'HCM', 'BI',
-    'QM', 'PS', 'HR', 'SCM', 'CRM', 'PLM', 'SRM', 'GTS',
-    'EHS', 'IS', 'BW', 'MDG', 'S4HANA', 'FSCM', 'TM', 'IBP'
+    'MM',
+    'PP',
+    'SD',
+    'FI',
+    'CO',
+    'PM',
+    'HCM',
+    'BI',
+    'QM',
+    'PS',
+    'HR',
+    'SCM',
+    'CRM',
+    'PLM',
+    'SRM',
+    'GTS',
+    'EHS',
+    'IS',
+    'BW',
+    'MDG',
+    'S4HANA',
+    'FSCM',
+    'TM',
+    'IBP'
   ];
-
-  bool showAll = false;
 
   @override
   Widget build(BuildContext context) {
-    List<String> modulesToShow = showAll ? modules : modules.sublist(0, 10);
+    List<String> modulesToShow = modules; // Hiển thị tất cả modules
 
     return Scaffold(
       appBar: AppBar(
@@ -27,45 +46,25 @@ class _TestPageState extends State<ViewAllMaterial> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            // Điều hướng về ViewAllMaterial khi nhấn nút trở lại
             Navigator.pop(context);
-           //đây nè anh
-           //Sửa y chang luôn, nút back về thì dùng cái nay
           },
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 2.5,
-                children: modulesToShow.map((module) {
-                  return GestureDetector(
-                    onTap: () {
-                      navigateToModule(module);
-                    },
-                    child: buildModuleBox(module),
-                  );
-                }).toList(),
-              ),
-            ),
-            SizedBox(height: 12),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    showAll = !showAll;
-                  });
-                },
-                child: Text(showAll ? 'Hiển thị ít hơn' : 'Hiển thị thêm'),
-              ),
-            ),
-          ],
+        child: GridView.count(
+          crossAxisCount: 2, // 2 cột
+          crossAxisSpacing: 7, // Khoảng cách giữa các cột
+          mainAxisSpacing: 10, // Khoảng cách giữa các hàng
+          childAspectRatio: 1.5, // Tỷ lệ chiều rộng / chiều cao, giúp các ô to hơn
+          children: modulesToShow.map((module) {
+            return GestureDetector(
+              onTap: () {
+                navigateToModule(module);
+              },
+              child: buildModuleBox(module),
+            );
+          }).toList(),
         ),
       ),
     );
@@ -76,7 +75,8 @@ class _TestPageState extends State<ViewAllMaterial> {
     if (module == 'MM') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ModuleMM()), // Điều hướng đến trang module MM
+        MaterialPageRoute(
+            builder: (context) => ModuleMM()), // Điều hướng đến trang module MM
       );
     } else if (module == 'PP') {
       // Điều hướng đến trang module PP
@@ -88,7 +88,7 @@ class _TestPageState extends State<ViewAllMaterial> {
   Widget buildModuleBox(String module) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFF275998), // Màu nền xanh đậm
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
@@ -102,8 +102,9 @@ class _TestPageState extends State<ViewAllMaterial> {
         child: Text(
           module,
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 22, // Kích thước chữ lớn hơn
             fontWeight: FontWeight.bold,
+            color: Colors.white, // Màu chữ trắng
           ),
         ),
       ),
