@@ -7,7 +7,7 @@ class EnrollPage extends StatefulWidget {
 }
 
 class _EnrollPageState extends State<EnrollPage> {
-  String? selectedClass; // Biến lưu trạng thái của lớp được chọn
+  String? selectedClass;
   String? selectedTime;
   String? selectedStudents;
   String? selectedLocation;
@@ -16,12 +16,13 @@ class _EnrollPageState extends State<EnrollPage> {
   String? selectedlevel;
   String? selectedsessions;
   String? selectedduration;
+  bool showOnline = true; // Biến để chuyển đổi giữa lớp Online và Offline
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chọn lớp'),
+        title: Text('Chọn lớp học'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -31,71 +32,203 @@ class _EnrollPageState extends State<EnrollPage> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      showOnline = true;
+                    });
+                  },
+                  child: Text(
+                    'Online',
+                    style: TextStyle(
+                      color: showOnline ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(150, 50),
+                    backgroundColor: showOnline ? Color(0xFF275998) : Colors.grey[300],
+                  ),
+                ),
+                SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      showOnline = false;
+                    });
+                  },
+                  child: Text(
+                    'Offline',
+                    style: TextStyle(
+                      color: !showOnline ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(150, 50),
+                    backgroundColor: !showOnline ? Color(0xFF275998) : Colors.grey[300],
+                  ),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Wrap(
+                spacing: 2.0, // Khoảng cách giữa các ClassCard theo chiều ngang
+                runSpacing: 2.0, // Khoảng cách giữa các hàng ClassCard
                 children: [
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ClassCard(
-                        title: 'C_TS462_1',
-                        isOnline: true,
-                        time: '16h - 17h30 thứ 5\n16h - 17h30 thứ 7',
-                        students: '17 / 30',
-                        location: 'Google Meet',
-                        fee: '2.500.000 vnđ/khóa',
-                        isSelected: selectedClass == 'C_TS462_1',
-                        iddcertificate:'C_TS462_MM' ,
-                        level:'Intermediate' ,
-                        sessions:'10' ,
-                        duration:'5 tuần' ,
-                        onTap: () {
-                          setState(() {
-                            selectedClass = 'C_TS462_1';
-                            selectedTime = '16h - 17h30 thứ 5\n16h - 17h30 thứ 7';
-                            selectedStudents = '17 / 30';
-                            selectedLocation = 'Google Meet';
-                            selectedFee = '2.500.000 vnđ';
-                            selectediddcertificate = 'C_TS462_MM';
-                            selectedlevel = 'Intermediate';
-                            selectedsessions = '10';
-                            selectedduration = '5 tuần';
-                          });
-                        }, 
-                      ),
-                      ClassCard(
-                        title: 'C_TS462_2',
-                        isOnline: false,
-                        time: '16h - 17h30 thứ 2\n19h - 20h30 thứ 6',
-                        students: '17 / 30',
-                        location: 'Phòng 210 NVH SV',
-                        fee: '3.700.000 vnđ/khóa',
-                        iddcertificate: 'C_TS462_MM',
-                        level:'Intermediate' ,
-                        sessions:'10' ,
-                        duration:'5 tuần' ,
-                        isSelected: selectedClass == 'C_TS462_2',
-                        onTap: () {
-                          setState(() {
-                            selectedClass = 'C_TS462_2';
-                            selectedTime = '16h - 17h30 thứ 2\n19h - 20h30 thứ 6';
-                            selectedStudents = '17 / 30';
-                            selectedLocation = 'Phòng 210 NVH SV';
-                            selectedFee = '3.700.000 vnđ';
-                            selectediddcertificate = 'C_TS462_MM';
-                            selectedlevel = 'Intermediate';
-                            selectedsessions = '10';
-                            selectedduration = '5 tuần';
-                          });
-                        }, 
-                      ),
-                    ],
-                  ),
+                  if (showOnline) ...[
+                    ClassCard(
+                      title: 'C_TS462_A1',
+                      isOnline: true,
+                      time: '16h - 17h30 thứ 5\n16h - 17h30 thứ 7',
+                      students: '17 / 30',
+                      location: 'Google Meet',
+                      fee: '2.500.000 vnđ/khóa',
+                      isSelected: selectedClass == 'C_TS462_A1',
+                      iddcertificate: 'C_TS462_MM',
+                      level: 'Intermediate',
+                      sessions: '10',
+                      duration: '5 tuần',
+                      onTap: () {
+                        setState(() {
+                          selectedClass = 'C_TS462_A1';
+                          selectedTime = '16h - 17h30 thứ 5\n16h - 17h30 thứ 7';
+                          selectedStudents = '17 / 30';
+                          selectedLocation = 'Google Meet';
+                          selectedFee = '2.500.000 vnđ';
+                          selectediddcertificate = 'C_TS462_MM';
+                          selectedlevel = 'Intermediate';
+                          selectedsessions = '10';
+                          selectedduration = '5 tuần';
+                        });
+                      },
+                    ),
+                    ClassCard(
+                      title: 'C_TS462_A2',
+                      isOnline: true,
+                      time: '18h - 19h30 thứ 2\n18h - 19h30 thứ 4',
+                      students: '15 / 30',
+                      location: 'Google Meet',
+                      fee: '2.800.000 vnđ/khóa',
+                      isSelected: selectedClass == 'C_TS462_A2',
+                      iddcertificate: 'C_TS462_MM',
+                      level: 'Advanced',
+                      sessions: '12',
+                      duration: '6 tuần',
+                      onTap: () {
+                        setState(() {
+                          selectedClass = 'C_TS462_A2';
+                          selectedTime = '18h - 19h30 thứ 2\n18h - 19h30 thứ 4';
+                          selectedStudents = '15 / 30';
+                          selectedLocation = 'Google Meet';
+                          selectedFee = '2.800.000 vnđ';
+                          selectediddcertificate = 'C_TS462_MM';
+                          selectedlevel = 'Advanced';
+                          selectedsessions = '12';
+                          selectedduration = '6 tuần';
+                        });
+                      },
+                    ),
+                  ] else ...[
+                    ClassCard(
+                      title: 'C_TS462_B1',
+                      isOnline: false,
+                      time: '16h - 17h30 thứ 2\n19h - 20h30 thứ 6',
+                      students: '17 / 30',
+                      location: 'Phòng 210 NVH SV',
+                      fee: '3.700.000 vnđ/khóa',
+                      iddcertificate: 'C_TS462_MM',
+                      level: 'Intermediate',
+                      sessions: '10',
+                      duration: '5 tuần',
+                      isSelected: selectedClass == 'C_TS462_B1',
+                      onTap: () {
+                        setState(() {
+                          selectedClass = 'C_TS462_B1';
+                          selectedTime = '16h - 17h30 thứ 2\n19h - 20h30 thứ 6';
+                          selectedStudents = '17 / 30';
+                          selectedLocation = 'Phòng 210 NVH SV';
+                          selectedFee = '3.700.000 vnđ';
+                          selectediddcertificate = 'C_TS462_MM';
+                          selectedlevel = 'Intermediate';
+                          selectedsessions = '10';
+                          selectedduration = '5 tuần';
+                        });
+                      },
+                    ),
+                    ClassCard(
+                      title: 'C_TS462_B2',
+                      isOnline: false,
+                      time: '17h - 18h30 thứ 3\n17h - 18h30 thứ 5',
+                      students: '20 / 30',
+                      location: 'Phòng 310 NVH SV',
+                      fee: '4.000.000 vnđ/khóa',
+                      iddcertificate: 'C_TS462_MM',
+                      level: 'Advanced',
+                      sessions: '12',
+                      duration: '6 tuần',
+                      isSelected: selectedClass == 'C_TS462_B2',
+                      onTap: () {
+                        setState(() {
+                          selectedClass = 'C_TS462_B2';
+                          selectedTime = '17h - 18h30 thứ 3\n17h - 18h30 thứ 5';
+                          selectedStudents = '20 / 30';
+                          selectedLocation = 'Phòng 310 NVH SV';
+                          selectedFee = '4.000.000 vnđ';
+                          selectediddcertificate = 'C_TS462_MM';
+                          selectedlevel = 'Advanced';
+                          selectedsessions = '12';
+                          selectedduration = '6 tuần';
+                        });
+                      },
+                    ),
+                    ClassCard(
+                      title: 'C_TS462_B3',
+                      isOnline: false,
+                      time: '19h - 20h30 thứ 4\n19h - 20h30 thứ 7',
+                      students: '12 / 30',
+                      location: 'Phòng 410 NVH SV',
+                      fee: '3.500.000 vnđ/khóa',
+                      iddcertificate: 'C_TS462_MM',
+                      level: 'Beginner',
+                      sessions: '8',
+                      duration: '4 tuần',
+                      isSelected: selectedClass == 'C_TS462_B3',
+                      onTap: () {
+                        setState(() {
+                          selectedClass = 'C_TS462_B3';
+                          selectedTime = '19h - 20h30 thứ 4\n19h - 20h30 thứ 7';
+                          selectedStudents = '12 / 30';
+                          selectedLocation = 'Phòng 410 NVH SV';
+                          selectedFee = '3.500.000 vnđ';
+                          selectediddcertificate = 'C_TS462_MM';
+                          selectedlevel = 'Beginner';
+                          selectedsessions = '8';
+                          selectedduration = '4 tuần';
+                        });
+                      },
+                    ),
+                  ],
                 ],
+              ),
+            ),
+          ),
+          // Hiển thị lớp đã chọn
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              selectedClass != null
+                  ? 'Đã chọn lớp: $selectedClass'
+                  : 'Chưa chọn lớp nào',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -119,7 +252,6 @@ class _EnrollPageState extends State<EnrollPage> {
                             level: selectedlevel!,
                             sessions: selectedsessions!,
                             duration: selectedduration!,
-                            // idcertificate: selectedIDcertificate!,
                           ),
                         ),
                       );
@@ -127,11 +259,9 @@ class _EnrollPageState extends State<EnrollPage> {
                   : null, // Nếu chưa chọn lớp, nút sẽ bị disable
               child: Text('Tiếp tục'),
               style: ElevatedButton.styleFrom(
-                minimumSize:
-                    Size(double.infinity, 50), // Nút chiếm toàn bộ chiều ngang
+                minimumSize: Size(double.infinity, 50),
                 backgroundColor: selectedClass != null
                     ? Color(0xFF275998) // Màu xanh biển khi được chọn
-                    
                     : Colors.grey, // Màu xám khi chưa chọn
                 foregroundColor: selectedClass != null
                     ? Colors.white // Chữ trắng khi được chọn
@@ -202,14 +332,14 @@ class ClassCard extends StatelessWidget {
                     Text(
                       title,
                       style: TextStyle(
-                        fontSize: 17, // Kích thước chữ nhỏ
+                        fontSize: 17,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       isOnline ? 'Online' : 'Offline',
                       style: TextStyle(
-                        fontSize: 15, // Kích thước chữ nhỏ
+                        fontSize: 15,
                         color: isOnline ? Colors.green : Colors.grey,
                       ),
                     ),
@@ -221,7 +351,7 @@ class ClassCard extends StatelessWidget {
                     text: '\nGiờ học: ',
                     style: TextStyle(
                       fontSize: 15,
-                      fontWeight: FontWeight.bold, // In đậm
+                      fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                     children: [
@@ -229,7 +359,7 @@ class ClassCard extends StatelessWidget {
                         text: '\n$time',
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.normal, // Chữ bình thường
+                          fontWeight: FontWeight.normal,
                         ),
                       ),
                     ],
@@ -241,7 +371,7 @@ class ClassCard extends StatelessWidget {
                     text: 'Học viên: ',
                     style: TextStyle(
                       fontSize: 15,
-                      fontWeight: FontWeight.bold, // In đậm
+                      fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                     children: [
@@ -249,7 +379,7 @@ class ClassCard extends StatelessWidget {
                         text: students,
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.normal, // Chữ bình thường
+                          fontWeight: FontWeight.normal,
                         ),
                       ),
                     ],
@@ -261,7 +391,7 @@ class ClassCard extends StatelessWidget {
                     text: 'Địa điểm học: ',
                     style: TextStyle(
                       fontSize: 15,
-                      fontWeight: FontWeight.bold, // In đậm
+                      fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                     children: [
@@ -269,7 +399,7 @@ class ClassCard extends StatelessWidget {
                         text: '\n$location',
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.normal, // Chữ bình thường
+                          fontWeight: FontWeight.normal,
                         ),
                       ),
                     ],
@@ -281,7 +411,7 @@ class ClassCard extends StatelessWidget {
                     text: 'Chi phí: ',
                     style: TextStyle(
                       fontSize: 15,
-                      fontWeight: FontWeight.bold, // In đậm
+                      fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                     children: [
@@ -289,7 +419,7 @@ class ClassCard extends StatelessWidget {
                         text: '\n$fee',
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.normal, // Chữ bình thường
+                          fontWeight: FontWeight.normal,
                         ),
                       ),
                     ],
