@@ -292,9 +292,7 @@ class HomePage extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                ViewAllMaterial()), // Điều hướng đến TestPage
+                        MaterialPageRoute(builder: (context) => ViewAllMaterial()), // Điều hướng đến trang View All Material
                       );
                     },
                     child: Text(
@@ -397,13 +395,7 @@ class HomePage extends StatelessWidget {
                                 idcertificate: 'C_TS462_CERT_$i', // Truyền mã chứng chỉ
                               ),
                             ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text('Certificate $i',
-                              style: TextStyle(fontSize: 16)),
-                        ),
-                        );
+                          );
                         },
                         child: Container(
                           width: MediaQuery.of(context).size.width,
@@ -421,6 +413,7 @@ class HomePage extends StatelessWidget {
                           ),
                           child: Center(
                             child: Text('Certificate $i', style: TextStyle(fontSize: 16)),
+                          ),
                         ),
                       );
                     },
