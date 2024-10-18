@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -8,15 +9,54 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final Dio _dio = Dio();
   bool _obscureText = true;
+  bool _isLoading = false;
 
-  void _login(BuildContext context) {
-    // Xử lý đăng nhập
-    Navigator.pushReplacementNamed(context, '/home');
+  Future<void> _login(BuildContext context) async {
+    final String username = _usernameController.text;
+    final String password = _passwordController.text;
+    // Kiểm tra thông tin đăng nhập
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter username and password')),
+      );
+      return;
+    }
+    try {
+      // Gọi API để đăng nhập
+      final response = await _dio.post(
+        'https://swdsapelearningapi.azurewebsites.net/api/User/login-app',
+        data: {
+          'username': username,
+          'password': password,
+        },
+      );
+      // Kiểm tra mã trạng thái
+      if (response.statusCode == 200) {
+        // Nếu đăng nhập thành công
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login successful!')),
+        );
+        Navigator.pushReplacementNamed(
+            context, '/home'); // Chuyển đến trang chính
+      } else {
+        // Nếu đăng nhập không thành công
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed! Try again.')),
+        );
+      }
+    } catch (e) {
+      // Xử lý ngoại lệ
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Incorrect username or password. Try again.')),
+      );
+    }
   }
 
   void _loginWithGoogle() {
-    // Xử lý đăng nhập với Google
+    // Điều hướng trực tiếp đến trang HomePage
+    Navigator.pushReplacementNamed(context, '/homepage');
   }
 
   void _forgotPassword(BuildContext context) {
@@ -135,18 +175,20 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: screenHeight * 0.02),
 
               // Nút Login
-              ElevatedButton(
-                onPressed: () => _login(context),
-                child: Text('Login'),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  backgroundColor: Color(0xFF275998),
-                  foregroundColor: Colors.white,
-                ),
-              ),
+              _isLoading
+                  ? CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: () => _login(context),
+                      child: Text('Login'),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: Color(0xFF275998),
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
               SizedBox(height: screenHeight * 0.02),
             ],
           ),
