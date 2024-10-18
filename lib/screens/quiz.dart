@@ -89,66 +89,127 @@ class _QuizPageState extends State<Quiz> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Dòng hiển thị câu hỏi hiện tại và phần trăm tiến độ
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Question ${currentQuestionIndex + 1}/${questions.length}',
                     style: TextStyle(fontSize: 18)),
-                // Cập nhật phần tiến độ dựa trên số lượng câu hỏi
                 Text(
-                    'Progress: ${(100 * (currentQuestionIndex + 1) / questions.length).toStringAsFixed(0)}%',
-                    style: TextStyle(fontSize: 18)),
-              ],
-            ),
-            SizedBox(height: 20),
-            Text(
-              questions[currentQuestionIndex].questionText,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 40),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed:
-                        answerSelected == null ? () => checkAnswer(true) : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: answerSelected == true
-                          ? (isCorrect == true ? Colors.green : Colors.red)
-                          : Colors.blue,
-                    ),
-                    child: Text(
-                      'True',
-                      style: TextStyle(
-                        color: Colors.white, // Màu chữ trắng
-                        fontWeight: FontWeight.bold, // Chữ in đậm
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 20),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: answerSelected == null
-                        ? () => checkAnswer(false)
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: answerSelected == false
-                          ? (isCorrect == false ? Colors.red : Colors.green)
-                          : Colors.blue,
-                    ),
-                    child: Text(
-                      'False',
-                      style: TextStyle(
-                        color: Colors.white, // Màu chữ trắng
-                        fontWeight: FontWeight.bold, // Chữ in đậm
-                      ),
-                    ),
-                  ),
+                  'Progress: ${(100 * (currentQuestionIndex + 1) / questions.length).toStringAsFixed(0)}%',
+                  style: TextStyle(fontSize: 18),
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
+
+            // Thẻ cố định cho phần câu hỏi
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Color(0xFFE1E1E1), // Màu nền theo mã E1E1E1
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.5), // Stroke mờ trắng
+                    spreadRadius: 2,
+                    blurRadius: 8,
+                  ),
+                ],
+              ),
+              height: 200, // Cố định chiều cao thẻ câu hỏi
+              child: Center(
+                // Chữ nằm giữa
+                child: Text(
+                  questions[currentQuestionIndex].questionText,
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.black, // Màu chữ đen
+                    fontWeight: FontWeight.normal, // Không in đậm
+                  ),
+                  maxLines: 5, // Giới hạn tối đa 5 dòng
+                  overflow:
+                      TextOverflow.ellipsis, // Thêm dấu ba chấm nếu quá dài
+                  textAlign: TextAlign.center, // Căn giữa chữ
+                ),
+              ),
+            ),
+
+            SizedBox(height: 10), // Khoảng cách giữa thẻ câu hỏi và nút
+
+            // Nút True
+            Container(
+              width: double.infinity, // Chiều rộng bằng với thẻ câu hỏi
+              child: ElevatedButton(
+                onPressed: () => checkAnswer(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      const Color(0xFF61C273), // Màu xanh lá cây cho nút True
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Bo tròn góc nhẹ
+                    side: BorderSide(
+                      color: (answerSelected ==
+                              true) // Nếu người dùng chọn True
+                          ? Colors.black
+                          : Colors
+                              .transparent, // Viền đen xung quanh đáp án đã chọn
+                      width: 5,
+                    ),
+                  ),
+                  minimumSize: Size(
+                      double.infinity, 90), // Chiều cao nút bằng thẻ câu hỏi
+                  padding: EdgeInsets.symmetric(
+                      vertical: 105), // Điều chỉnh chiều cao nút
+                ),
+                child: Text(
+                  'True',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18, // Kích thước chữ
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 10), // Khoảng cách giữa hai nút
+
+// Nút False
+            Container(
+              width: double.infinity, // Chiều rộng bằng với thẻ câu hỏi
+              child: ElevatedButton(
+                onPressed: () => checkAnswer(false),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      const Color(0xFFE53A42), // Màu đỏ cho nút False
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Bo tròn góc nhẹ
+                    side: BorderSide(
+                      color: (answerSelected ==
+                              false) // Nếu người dùng chọn False
+                          ? Colors.black
+                          : Colors
+                              .transparent, // Viền đen xung quanh đáp án đã chọn
+                      width: 5,
+                    ),
+                  ),
+                  minimumSize: Size(
+                      double.infinity, 90), // Chiều cao nút bằng thẻ câu hỏi
+                  padding: EdgeInsets.symmetric(
+                      vertical: 105), // Điều chỉnh chiều cao nút
+                ),
+                child: Text(
+                  'False',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18, // Kích thước chữ
+                  ),
+                ),
+              ),
+            ),
+
+            Spacer(),
+
+            // Phần hiển thị kết quả chỉ khi đã chọn đáp án
             if (answerSelected != null)
               Container(
                 padding: const EdgeInsets.all(16),
@@ -167,7 +228,6 @@ class _QuizPageState extends State<Quiz> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 10),
                     Text(
                       'Answer: ${questions[currentQuestionIndex].answer ? "True" : "False"}',
                       style: TextStyle(
@@ -178,24 +238,28 @@ class _QuizPageState extends State<Quiz> {
                   ],
                 ),
               ),
-            Spacer(), // Đẩy các nút xuống dưới cùng
-            ElevatedButton(
-              onPressed: answerSelected != null ? nextQuestion : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: answerSelected == null
-                    ? Colors.grey
-                    : isCorrect!
-                        ? Colors.green
-                        : Colors.red, // Đổi màu theo trạng thái câu trả lời
-                padding: EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: Text(
-                currentQuestionIndex == questions.length - 1
-                    ? 'Finish' // Hiển thị "Finish" nếu là câu hỏi cuối cùng
-                    : 'Next Question',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
+            SizedBox(height: 0),
+
+            // Nút Next Question luôn hiển thị và bị disable nếu chưa chọn đáp án
+            Container(
+              padding: const EdgeInsets.only(top: 10),
+              child: ElevatedButton(
+                onPressed: answerSelected != null ? nextQuestion : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: answerSelected == null
+                      ? Colors.grey
+                      : (isCorrect! ? Color(0xFF275998) : Color(0xFF275998)),
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  minimumSize: Size(double.infinity, 50),
+                ),
+                child: Text(
+                  currentQuestionIndex == questions.length - 1
+                      ? 'Finish'
+                      : 'Next Question',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
                 ),
               ),
             ),
@@ -229,28 +293,52 @@ class _QuizPageState extends State<Quiz> {
             title: Text('Quiz Finished!'),
             content: Text('Your score is $score/${questions.length}'),
             actions: [
-              Center(
-                // Đặt nút ở giữa
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Quay lại trang thứ nhất
-                    Navigator.pop(context); // Quay lại trang thứ hai
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue, // Thay đổi màu nền nút
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 12), // Điều chỉnh padding
-                    textStyle:
-                        TextStyle(fontSize: 18), // Điều chỉnh kích cỡ chữ
-                  ),
-                  child: Text(
-                    'Ok',
-                    style: TextStyle(
-                      color: Colors.white, // Màu chữ trắng
-                      fontWeight: FontWeight.bold, // Chữ in đậm
+              Row(
+                mainAxisAlignment: MainAxisAlignment
+                    .spaceEvenly, // Đặt khoảng cách đều giữa hai nút
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Đóng dialog
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => Quiz()));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Color(0xFF275998), // Thay đổi màu nền nút
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 12), // Điều chỉnh padding
+                      textStyle:
+                          TextStyle(fontSize: 18), // Điều chỉnh kích cỡ chữ
+                    ),
+                    child: Text(
+                      'Retake Quiz',
+                      style: TextStyle(
+                        color: Colors.white, // Màu chữ trắng
+                      ),
                     ),
                   ),
-                ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Quay lại trang trước
+                      Navigator.pop(context); // Quay lại trang thứ hai
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Color(0xFF275998), // Thay đổi màu nền nút
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 12), // Điều chỉnh padding
+                      textStyle:
+                          TextStyle(fontSize: 18), // Điều chỉnh kích cỡ chữ
+                    ),
+                    child: Text(
+                      'Ok',
+                      style: TextStyle(
+                        color: Colors.white, // Màu chữ trắng
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

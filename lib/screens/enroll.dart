@@ -130,7 +130,8 @@ class _EnrollPageState extends State<EnrollPage> {
                 minimumSize:
                     Size(double.infinity, 50), // Nút chiếm toàn bộ chiều ngang
                 backgroundColor: selectedClass != null
-                    ? Colors.blue // Màu xanh biển khi được chọn
+                    ? Color(0xFF275998) // Màu xanh biển khi được chọn
+                    
                     : Colors.grey, // Màu xám khi chưa chọn
                 foregroundColor: selectedClass != null
                     ? Colors.white // Chữ trắng khi được chọn

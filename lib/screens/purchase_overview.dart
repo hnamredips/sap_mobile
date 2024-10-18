@@ -101,7 +101,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
               child: Text('CONTINUE', style: TextStyle(fontSize: 18)),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
-                backgroundColor: Colors.blue,
+                backgroundColor: Color(0xFF275998),
                 foregroundColor: Colors.white,
               ),
             ),
@@ -125,7 +125,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
           CircleAvatar(
             radius: 20,
             backgroundColor:
-                _currentStep == step ? Colors.blue : Colors.grey[300],
+                _currentStep == step ? Color(0xFF275998) : Colors.grey[300],
             child: Text(
               title[0],
               style: TextStyle(
@@ -138,7 +138,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
           Text(
             title,
             style: TextStyle(
-              color: _currentStep == step ? Colors.blue : Colors.grey,
+              color: _currentStep == step ? Color(0xFF275998) : Colors.grey,
             ),
           ),
         ],
@@ -287,7 +287,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
         trailing: Radio<String>(
           value: label,
           groupValue: selectedValue,
-          activeColor: Colors.blue,
+          activeColor: Color(0xFF275998),
           onChanged: (String? value) {
             onSelect();
           },
