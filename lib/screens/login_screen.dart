@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _loginWithGoogle() {
     // Điều hướng trực tiếp đến trang HomePage
-    Navigator.pushReplacementNamed(context, '/homepage');
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   void _forgotPassword(BuildContext context) {

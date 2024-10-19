@@ -297,3 +297,4 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
     );
   }
 }
+
