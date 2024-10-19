@@ -226,7 +226,7 @@ class HomePage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
+builder: (context) =>
                         SearchScreen()), // Điều hướng đến SearchScreen
               );
             },
@@ -299,7 +299,7 @@ class HomePage extends StatelessWidget {
                       'View All',
                       style: TextStyle(
                         color: Colors.blue, // Màu xanh cho nút View All
-                        fontSize: 14,
+fontSize: 14,
                       ),
                     ),
                   ),
@@ -368,7 +368,7 @@ class HomePage extends StatelessWidget {
 
               // Top Certificate Slider
               Text('Top Certificate', style: TextStyle(fontSize: 18)),
-              CarouselSlider(
+CarouselSlider(
                 options: CarouselOptions(
                   height: 80,
                   enableInfiniteScroll: true,
@@ -439,7 +439,7 @@ class HomePage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
+Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Subject Code: $subjectCode'),
@@ -466,3 +466,4 @@ class HomePage extends StatelessWidget {
     );
   }
 }
+
