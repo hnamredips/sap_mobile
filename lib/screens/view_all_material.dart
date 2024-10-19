@@ -1,48 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:sap_mobile/screens/home_page.dart';
-import 'package:sap_mobile/screens/home_screen.dart';
+import 'package:dio/dio.dart';
 import 'moduleMM.dart'; // Import các trang module bạn đã tạo
 
 class ViewAllMaterial extends StatefulWidget {
   @override
-  _TestPageState createState() => _TestPageState();
+  _ViewAllMaterialState createState() => _ViewAllMaterialState();
 }
 
-class _TestPageState extends State<ViewAllMaterial> {
-  final List<String> modules = [
-    'MM',
-    'PP',
-    'SD',
-    'FI',
-    'CO',
-    'PM',
-    'HCM',
-    'BI',
-    'QM',
-    'PS',
-    'HR',
-    'SCM',
-    'CRM',
-    'PLM',
-    'SRM',
-    'GTS',
-    'EHS',
-    'IS',
-    'BW',
-    'MDG',
-    'S4HANA',
-    'FSCM',
-    'TM',
-    'IBP'
-  ];
+class _ViewAllMaterialState extends State<ViewAllMaterial> {
+  List<String> modules = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchModules();
+  }
+
+  Future<void> fetchModules() async {
+    try {
+      final response = await Dio().get('https://swdsapelearningapi.azurewebsites.net/api/SapModule/get-all');
+      if (response.statusCode == 200) {
+        setState(() {
+          modules = List<String>.from(response.data.map((module) => module['moduleName'] as String));
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _errorMessage = 'Failed to load modules';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error: $e';
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<String> modulesToShow = modules; // Hiển thị tất cả modules
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Categories (24 Modules)'),
+        title: Text('Categories (${modules.length} Modules)'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -52,20 +54,24 @@ class _TestPageState extends State<ViewAllMaterial> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: GridView.count(
-          crossAxisCount: 2, // 2 cột
-          crossAxisSpacing: 7, // Khoảng cách giữa các cột
-          mainAxisSpacing: 10, // Khoảng cách giữa các hàng
-          childAspectRatio: 1.5, // Tỷ lệ chiều rộng / chiều cao, giúp các ô to hơn
-          children: modulesToShow.map((module) {
-            return GestureDetector(
-              onTap: () {
-                navigateToModule(module);
-              },
-              child: buildModuleBox(module),
-            );
-          }).toList(),
-        ),
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : _errorMessage != null
+                ? Center(child: Text(_errorMessage!))
+                : GridView.count(
+                    crossAxisCount: 2, // 2 cột
+                    crossAxisSpacing: 7, // Khoảng cách giữa các cột
+                    mainAxisSpacing: 10, // Khoảng cách giữa các hàng
+                    childAspectRatio: 1.5, // Tỷ lệ chiều rộng / chiều cao, giúp các ô to hơn
+                    children: modules.map((module) {
+                      return GestureDetector(
+                        onTap: () {
+                          navigateToModule(module);
+                        },
+                        child: buildModuleBox(module),
+                      );
+                    }).toList(),
+                  ),
       ),
     );
   }
