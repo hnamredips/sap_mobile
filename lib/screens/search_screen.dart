@@ -272,6 +272,7 @@ class SearchScreen extends StatefulWidget {
   _SearchScreenState createState() => _SearchScreenState();
 }
 
+
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<String> _modules = ['SD', 'PP', 'MM', 'AI', 'FI', 'CO', 'PM', 'HCM', 'BI', 'BW'];
@@ -321,11 +322,13 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+
   void _selectAllModules() {
     setState(() {
       _selectedModules = List.from(_modules);
     });
   }
+
 
   void _selectAllLevels() {
     setState(() {
@@ -333,17 +336,20 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+
   void _clearAllModules() {
     setState(() {
       _selectedModules.clear();
     });
   }
 
+
   void _clearAllLevels() {
     setState(() {
       _selectedLevels.clear();
     });
   }
+
 
   void _showFilterDrawer(BuildContext context) {
     showModalBottomSheet(
@@ -473,6 +479,7 @@ class _SearchScreenState extends State<SearchScreen> {
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {

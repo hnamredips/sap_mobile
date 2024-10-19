@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:sap_mobile/screens/moduleMM.dart';
+import 'moduleMM.dart'; // Import các trang module bạn đã tạo
 
 class ViewAllMaterial extends StatefulWidget {
   @override
-  _TestPageState createState() => _TestPageState();
+  _ViewAllMaterialState createState() => _ViewAllMaterialState();
 }
 
-class _TestPageState extends State<ViewAllMaterial> {
-  List<dynamic> modules = []; // Dữ liệu lấy từ API sẽ được lưu ở đây
-  bool isLoading = true; // Trạng thái loading
-
+class _ViewAllMaterialState extends State<ViewAllMaterial> {
+  List<String> modules = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+  
   @override
   void initState() {
     super.initState();
