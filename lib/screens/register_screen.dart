@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'home_page.dart'; // Import trang homepage
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -17,12 +19,79 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscureConfirmPassword = true;
 
   void _signUpWithGoogle() {
-    // Xử lý đăng ký với Google
+   // Xử lý đăng ký với Google
+ }
+
+  // Hàm để gọi API đăng ký
+  Future<void> _register(BuildContext context) async {
+    if (_formKey.currentState!.validate() && _agreeToTerms) {
+      try {
+        var dio = Dio();
+        var response = await dio.post(
+          'https://swdsapelearningapi.azurewebsites.net/api/User/registration',
+          data: {
+            'email': _emailController.text,
+            'password': _passwordController.text,
+            'confirmPassword': _confirmPasswordController.text
+          },
+        );
+
+        if (response.statusCode == 200) {
+          showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Registration Successful'),
+              content: Text('Your account has been created successfully.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                    );
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+        } else {
+          _showErrorDialog(context, "Failed to register. Please try again.");
+        }
+      } catch (e) {
+        if (e is DioError && e.response?.statusCode == 400) {
+          // Kiểm tra lỗi từ API nếu email đã tồn tại
+          _showErrorDialog(context, "Email has already been registered !");
+        } else {
+          // Hiển thị thông báo lỗi chung
+          _showErrorDialog(context, "An error occurred: $e");
+        }
+      }
+    }
   }
 
-  void _goToNextPage(BuildContext context) {
-    if (_formKey.currentState!.validate() && _agreeToTerms) {
-    }
+  // Hiển thị dialog lỗi
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Notification'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   String? _validateEmail(String? value) {
@@ -57,7 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // Quay lại trang trước
+            Navigator.pop(context);
           },
         ),
         centerTitle: true,
@@ -223,30 +292,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
             SizedBox(height: screenHeight * 0.01),
-                    // Nút Next ở giữa phía dưới
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () => _goToNextPage(context),
-                        child: Text('Register'),
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: Size(120, 50), // Kích thước lớn hơn
-                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32), // Điều chỉnh padding
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20), // Bo tròn góc nhiều hơn
-                          ),
-                          backgroundColor: Color(0xFF275998), // Màu nền xanh đậm
-                          foregroundColor: Colors.white, // Màu chữ trắng
-                        ),
-                      ),
-                    ),
+            // Nút Next ở giữa phía dưới
+            Center(
+              child: ElevatedButton(
+                onPressed: () => _register(context), // Gọi API đăng ký
+                child: Text('Register'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(120, 50),
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  backgroundColor: Color(0xFF275998),
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ),
             SizedBox(height: 40),
-
           ],
         ),
       ),
     );
   }
 }
-
 
 
