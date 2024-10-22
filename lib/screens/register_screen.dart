@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'register_screen_step2.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -23,10 +22,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _goToNextPage(BuildContext context) {
     if (_formKey.currentState!.validate() && _agreeToTerms) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => RegisterScreenStep2()),
-      );
     }
   }
 
@@ -198,20 +193,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     SizedBox(height: screenHeight * 0.02),
 
-                    // Thanh trạng thái (trang đầu tiên)
-                    Align(
-                      alignment: Alignment.center,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.circle, size: 10, color: Color(0xFF275998)), // Trang hiện tại
-                          SizedBox(width: 5),
-                          Icon(Icons.circle, size: 10, color: Colors.grey[400]),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: screenHeight * 0.02),
-
                     // Đăng nhập (dòng dưới cùng)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -241,30 +222,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
             ),
-
-            // Nút Next ở góc dưới bên phải
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: ElevatedButton(
-                  onPressed: () => _goToNextPage(context),
-                  child: Text('Next'),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(80, 40), // Kích thước nhỏ gọn
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20), // Điều chỉnh padding
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20), // Bo tròn góc nhiều hơn
+            SizedBox(height: screenHeight * 0.01),
+                    // Nút Next ở giữa phía dưới
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () => _goToNextPage(context),
+                        child: Text('Register'),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(120, 50), // Kích thước lớn hơn
+                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32), // Điều chỉnh padding
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20), // Bo tròn góc nhiều hơn
+                          ),
+                          backgroundColor: Color(0xFF275998), // Màu nền xanh đậm
+                          foregroundColor: Colors.white, // Màu chữ trắng
+                        ),
+                      ),
                     ),
-                    backgroundColor: Color(0xFF275998), // Màu nền xanh đậm
-                    foregroundColor: Colors.white, // Màu chữ trắng
-                  ),
-                ),
-              ),
-            ),
+            SizedBox(height: 40),
+
           ],
         ),
       ),
     );
   }
 }
+
+
+
