@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart'; // Thêm thư viện DIO để gọi API
 
 class CombinedPurchasePage extends StatefulWidget {
   final String className;
@@ -32,6 +33,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
   int _currentStep = 0; // Biến để theo dõi bước hiện tại
   PageController _pageController =
       PageController(); // PageController để điều khiển PageView
+  String _selectedPaymentMethod = 'Mastercard'; // Default selected method
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +213,6 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
 
   // Trang Payment Method
   Widget buildPaymentMethodPage() {
-    String _selectedPaymentMethod = 'Mastercard'; // Default selected method
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -232,6 +233,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
                 setState(() {
                   _selectedPaymentMethod = 'VNPAY';
                 });
+                _createPayment(context); // Gọi hàm xử lý thanh toán
               },
             ),
           ],
@@ -296,5 +298,81 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
       ),
     );
   }
+
+  // Thêm hàm để xử lý tạo thanh toán
+  Future<void> _createPayment(BuildContext context) async {
+    try {
+      // Dữ liệu cần gửi đến API Payment Create
+      final data = {
+        'userId': 'S4b984', // Đảm bảo userId chính xác
+        'courseId': widget.className, // Lấy className làm courseId, cần chỉnh sửa nếu courseId khác
+        'price': widget.price, // Giá khóa học
+      };
+
+      // Gửi yêu cầu POST đến API Payment Create
+      var response = await Dio().post(
+        'https://swdsapelearningapi.azurewebsites.net/api/Payment/create',
+        data: data,
+      );
+
+      // Kiểm tra phản hồi từ server
+      if (response.statusCode == 200) {
+        // Nếu thành công, lấy PaymentId từ phản hồi
+        String paymentId = response.data['paymentId'];
+
+        // Chuyển hướng đến trang VNPAY với PaymentId
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VNPayPage(paymentId: paymentId),
+          ),
+        );
+      } else {
+        // Hiển thị thông báo lỗi nếu tạo thanh toán thất bại
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create payment')),
+        );
+      }
+    } catch (e) {
+      // Hiển thị lỗi nếu có ngoại lệ trong quá trình gọi API
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
 }
 
+// Trang VNPayPage để xử lý thanh toán qua VNPAY
+class VNPayPage extends StatelessWidget {
+  final String paymentId;
+
+  const VNPayPage({Key? key, required this.paymentId}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('VNPAY Payment'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Redirecting to VNPAY...',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            CircularProgressIndicator(), // Hiển thị loading trong khi đợi chuyển hướng
+          ],
+        ),
+      ),
+    );
+  }
+}
