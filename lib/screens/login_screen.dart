@@ -448,7 +448,7 @@ class _LoginScreenState extends State<LoginScreen> {
         User? user = FirebaseAuth.instance.currentUser;
 
         final String? idToken = await user?.getIdToken();
-        print('abc' + idToken.toString());
+        print('Token ne: ' + idToken.toString());
 
         var dio = Dio();
         var response = await dio.post(
