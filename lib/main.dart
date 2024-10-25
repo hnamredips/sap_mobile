@@ -13,8 +13,10 @@ import 'screens/forgot_password_screen.dart';
 import 'screens/reset_password_screen.dart';
 import 'screens/edit_profile_screen.dart';
 import 'screens/change_password_screen.dart'; // Thêm import cho ChangePasswordScreen
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() {
+  usePathUrlStrategy(); // Loại bỏ dấu #
   runApp(MyApp()); // Chạy ứng dụng
 }
 
