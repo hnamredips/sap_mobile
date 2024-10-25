@@ -17,6 +17,7 @@ import 'screens/register_screen_step2.dart'; // Add this import
 import 'screens/edit_profile_screen.dart';
 import 'screens/change_password_screen.dart'; // Thêm import cho ChangePasswordScreen
 
+// cmt
 Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
