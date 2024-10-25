@@ -1208,6 +1208,10 @@ Future<void> _register(BuildContext context) async {
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
                     SizedBox(height: screenHeight * 0.02),
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/bao
                     // Đăng nhập (dòng dưới cùng)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

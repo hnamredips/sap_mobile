@@ -4,29 +4,24 @@
 // import 'home_page.dart'; // Import trang homepage
 // import 'login_screen.dart';
 
-
 // class RegisterScreen extends StatefulWidget {
 //  @override
 //  _RegisterScreenState createState() => _RegisterScreenState();
 // }
-
 
 // class _RegisterScreenState extends State<RegisterScreen> {
 //  final TextEditingController _emailController = TextEditingController();
 //  final TextEditingController _passwordController = TextEditingController();
 //  final TextEditingController _confirmPasswordController = TextEditingController();
 
-
 //  final _formKey = GlobalKey<FormState>();
 //  bool _agreeToTerms = false;
 //  bool _obscurePassword = true;
 //  bool _obscureConfirmPassword = true;
 
-
 //  final GoogleSignIn _googleSignIn = GoogleSignIn(
 //    scopes: ['email'],
 //  );
-
 
 //  // Hàm để gọi API đăng ký với Google
 //  Future<void> _signUpWithGoogle(BuildContext context) async {
@@ -37,10 +32,8 @@
 //        return;
 //      }
 
-
 //      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 //      final String? idToken = googleAuth.idToken;
-
 
 //      var dio = Dio();
 //      var response = await dio.post(
@@ -49,7 +42,6 @@
 //          'idToken': idToken,
 //        },
 //      );
-
 
 //      if (response.statusCode == 200) {
 //        showDialog(
@@ -121,7 +113,6 @@
 //    }
 //  }
 
-
 //  // Hàm để gọi API đăng ký
 //  Future<void> _register(BuildContext context) async {
 //    if (_formKey.currentState!.validate() && _agreeToTerms) {
@@ -135,7 +126,6 @@
 //            'confirmPassword': _confirmPasswordController.text
 //          },
 //        );
-
 
 //        if (response.statusCode == 200) {
 //          showDialog(
@@ -174,7 +164,6 @@
 //    }
 //  }
 
-
 //  // Hiển thị dialog lỗi
 //  void _showErrorDialog(BuildContext context, String message) {
 //    showDialog(
@@ -196,7 +185,6 @@
 //    );
 //  }
 
-
 //  String? _validateEmail(String? value) {
 //    if (value == null || value.isEmpty) {
 //      return 'Please enter your email';
@@ -208,7 +196,6 @@
 //    return null;
 //  }
 
-
 //  String? _validatePassword(String? value) {
 //    if (value == null || value.isEmpty) {
 //      return 'Please enter your password';
@@ -219,11 +206,9 @@
 //    return null;
 //  }
 
-
 //  @override
 //  Widget build(BuildContext context) {
 //    final double screenHeight = MediaQuery.of(context).size.height;
-
 
 //    return Scaffold(
 //      appBar: AppBar(
@@ -255,7 +240,6 @@
 //                  children: [
 //                    SizedBox(height: screenHeight * 0.02),
 
-
 //                    // Nút đăng ký với Google
 //                    SizedBox(
 //                      width: double.infinity,
@@ -275,14 +259,12 @@
 //                    ),
 //                    SizedBox(height: screenHeight * 0.02),
 
-
 //                    // Dòng chữ "Or"
 //                    Text(
 //                      'Or',
 //                      style: TextStyle(fontSize: 16, color: Colors.grey),
 //                    ),
 //                    SizedBox(height: screenHeight * 0.02),
-
 
 //                    // Form nhập email, mật khẩu
 //                    Form(
@@ -356,7 +338,6 @@
 //                    ),
 //                    SizedBox(height: screenHeight * 0.02),
 
-
 //                    // Điều khoản sử dụng
 //                    CheckboxListTile(
 //                      title: Text(
@@ -371,7 +352,6 @@
 //                      controlAffinity: ListTileControlAffinity.leading,
 //                    ),
 //                    SizedBox(height: screenHeight * 0.02),
-
 
 //                    // Đăng nhập (dòng dưới cùng)
 //                    Row(
@@ -427,10 +407,10 @@
 //  }
 // }
 
-
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'home_page.dart'; // Import trang homepage
@@ -447,58 +427,63 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
   bool _isLoading = false;
 
-final GoogleSignIn _googleSignIn = GoogleSignIn(
-  clientId: '575550351850-ktdi1a5amhfospkj3ohrkdqdejrkords.apps.googleusercontent.com',
-  scopes: ['email', 'https://www.googleapis.com/auth/contacts.readonly'],
-);
-
+  GoogleSignIn _googleSignIn = GoogleSignIn(scopes: <String>[
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ]);
 
   // Hàm để gọi API đăng nhập với Google
   Future<void> _loginWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      print('AAA');
       if (googleUser == null) {
         return;
       }
+      googleUser.authentication.then((googleAuth) async {
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        await FirebaseAuth.instance.signInWithCredential(credential);
+        User? user = FirebaseAuth.instance.currentUser;
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final String? idToken = googleAuth.idToken;
-      print('abc' + idToken.toString());
+        final String? idToken = await user?.getIdToken();
+        print('Token ne: ' + idToken.toString());
 
-      var dio = Dio();
-      var response = await dio.post(
-        'https://swdsapelearningapi.azurewebsites.net/api/auth/google-auth/signin',
-        data: {
-          'idToken': idToken,
-        },
-      );
-
-      if (response.statusCode == 200) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Google Sign-In Successful'),
-              content: Text('You have signed in with Google successfully.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                    );
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
+        var dio = Dio();
+        var response = await dio.post(
+          'https://swdsapelearningapi.azurewebsites.net/api/auth/google-auth/signin',
+          data: {
+            'idToken': idToken,
           },
         );
-      } else {
-        _showErrorDialog(context, "Google Sign-In Failed. Please try again.");
-      }
+
+        if (response.statusCode == 200) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Google Sign-In Successful'),
+                content: Text('You have signed in with Google successfully.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage()),
+                      );
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          _showErrorDialog(context, "Google Sign-In Failed. Please try again.");
+        }
+      });
     } catch (e) {
       print(e.toString());
       String errorMessage = 'An unknown error occurred';
@@ -639,7 +624,9 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureText ? Icons.visibility_off : Icons.visibility,
+                            _obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                           ),
                           onPressed: () {
                             setState(() {

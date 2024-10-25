@@ -47,7 +47,7 @@ class ProfileScreen extends StatelessWidget {
                       fullName: 'John Doe', // Replace with actual full name
                       education: 'Bachelor of Science', // Replace with actual education
                       phoneNumber: '123-456-7890', // Replace with actual phone number
-                      password: 'your_password_here', // Replace with actual password
+                      gender: 'Male',
                     ),
                   ),
                 );
