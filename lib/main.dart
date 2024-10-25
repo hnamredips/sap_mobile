@@ -1,4 +1,6 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:sap_mobile/firebase_options.dart';
 import 'screens/home_screen.dart';
 import 'screens/home_page.dart';
 import 'screens/courses_page.dart';
@@ -11,11 +13,16 @@ import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/reset_password_screen.dart';
-import 'screens/register_screen_step2.dart'; // Add this import
 import 'screens/edit_profile_screen.dart';
 import 'screens/change_password_screen.dart'; // Thêm import cho ChangePasswordScreen
+import 'package:flutter_web_plugins/url_strategy.dart';
 
-void main() {
+// cmt
+Future<void> main() async {
+    WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp()); // Chạy ứng dụng
 }
 
@@ -37,13 +44,12 @@ class MyApp extends StatelessWidget {
         '/register': (context) => RegisterScreen(),
         '/forgot-password': (context) => ForgotPasswordScreen(),
         '/reset-password': (context) => ResetPasswordScreen(),
-        '/RegisterScreenStep2' : (context) => RegisterScreenStep2(),
         '/edit-profile': (context) => EditProfileScreen(
           email: 'example@example.com',
           fullName: 'John Doe',
           education: 'Bachelor\'s Degree',
           phoneNumber: '123-456-7890', 
-          password: '',
+          gender: 'Male',
         ), // Thêm route cho EditProfileScreen
         '/change-password': (context) => ChangePasswordScreen(), // Thêm route cho ChangePasswordScreen
 

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "506055875645",
+    "project_id": "signin-96a21",
+    "storage_bucket": "signin-96a21.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:506055875645:android:112561a803efcdffcf5e54",
+        "android_client_info": {
+          "package_name": "com.example.sap_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "506055875645-4ovmehckft2lkhanqp2053cn7tjribo4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sap_mobile",
+            "certificate_hash": "fcf2650f19c74ad88cabe4b346c7c9e0319cb831"
+          }
+        },
+        {
+          "client_id": "506055875645-cfdebnfuitat7tf79gk6d7ckhdbificb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCK-P0tk97Yy53O_SmErh18Vp5ZhzyKz6w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "506055875645-cfdebnfuitat7tf79gk6d7ckhdbificb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

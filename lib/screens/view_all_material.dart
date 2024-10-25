@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:sap_mobile/screens/moduleMM.dart';
-import 'moduleMM.dart'; // Import các trang module bạn đã tạo
 
 class ViewAllMaterial extends StatefulWidget {
   @override
-  _ViewAllMaterialState createState() => _ViewAllMaterialState();
+  _TestPageState createState() => _TestPageState();
 }
 
-class _ViewAllMaterialState extends State<ViewAllMaterial> {
-  List<String> modules = [];
-  bool _isLoading = true;
-  String? _errorMessage;
-  
+class _TestPageState extends State<ViewAllMaterial> {
+  List<dynamic> modules = []; // Dữ liệu lấy từ API sẽ được lưu ở đây
+  bool isLoading = true; // Trạng thái loading
+
   @override
   void initState() {
     super.initState();
     fetchModules(); // Gọi API khi màn hình khởi động
   }
+
 
   // Hàm gọi API bằng Dio
   Future<void> fetchModules() async {
@@ -26,12 +25,15 @@ class _ViewAllMaterialState extends State<ViewAllMaterial> {
         'https://swdsapelearningapi.azurewebsites.net/api/SapModule/get-all',
       );
 
+
       // In ra toàn bộ dữ liệu nhận được từ API để kiểm tra
       print("Response data: ${response.data}");
+
 
       // Truy cập vào trường $values
       if (response.data != null && response.data['\$values'] != null) {
         print("Modules found: ${response.data['\$values']}"); // In ra danh sách các module
+
 
         // Gán dữ liệu từ '$values' của API vào danh sách modules
         setState(() {
@@ -51,6 +53,7 @@ class _ViewAllMaterialState extends State<ViewAllMaterial> {
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +91,7 @@ class _ViewAllMaterialState extends State<ViewAllMaterial> {
     );
   }
 
+
   // Hàm điều hướng đến trang module tương ứng
   void navigateToModule(String module) {
     if (module == 'MM') {
@@ -100,6 +104,7 @@ class _ViewAllMaterialState extends State<ViewAllMaterial> {
     }
     // Thêm các điều kiện cho các module khác
   }
+
 
   // Hàm tạo widget hiển thị cho mỗi module
   Widget buildModuleBox(String moduleName) {
@@ -128,3 +133,9 @@ class _ViewAllMaterialState extends State<ViewAllMaterial> {
     );
   }
 }
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> origin/bao

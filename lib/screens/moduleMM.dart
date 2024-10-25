@@ -12,32 +12,35 @@ class ModuleMM extends StatefulWidget {
 
 class _ModuleMMState extends State<ModuleMM> {
   List<dynamic> certificates = []; // Dữ liệu lấy từ API sẽ được lưu ở đây
+  List<dynamic> topicAreas = []; // Dữ liệu Topic Area từ API
   bool isLoading = true; // Trạng thái loading
 
   @override
   void initState() {
     super.initState();
-    fetchCertificates(); // Gọi API khi màn hình khởi động
+    fetchCertificatesAndTopics(); // Gọi API khi màn hình khởi động
   }
 
-  // Hàm gọi API bằng Dio
-  Future<void> fetchCertificates() async {
+  // Hàm gọi API bằng Dio để lấy cả Certificates và Topic Areas
+  Future<void> fetchCertificatesAndTopics() async {
     try {
-      var response = await Dio().get(
+      var certificateResponse = await Dio().get(
         'https://swdsapelearningapi.azurewebsites.net/api/Certificate/get-all',
       );
+      var topicAreaResponse = await Dio().get(
+        'https://swdsapelearningapi.azurewebsites.net/api/TopicArea/get-all',
+      );
 
-      // In ra dữ liệu nhận được từ API để kiểm tra
-      print("Response data: ${response.data}");
-
-      // Kiểm tra nếu dữ liệu không null và có trường $values
-      if (response.data != null && response.data['\$values'] != null) {
+      // Kiểm tra dữ liệu phản hồi từ API
+      if (certificateResponse.data != null && certificateResponse.data.containsKey('\$values') &&
+          topicAreaResponse.data != null && topicAreaResponse.data.containsKey('\$values')) {
         setState(() {
-          certificates = List.from(response.data['\$values']); // Lấy dữ liệu từ $values
+          certificates = List.from(certificateResponse.data['\$values']); // Lấy dữ liệu certificates
+          topicAreas = List.from(topicAreaResponse.data['\$values']); // Lấy dữ liệu topic areas
           isLoading = false; // Tắt trạng thái loading
         });
       } else {
-        print('Error: "\$values" is null or response is null');
+        print('Error: Dữ liệu trả về không chứa trường "\$values"');
         setState(() {
           isLoading = false;
         });
@@ -48,6 +51,11 @@ class _ModuleMMState extends State<ModuleMM> {
         isLoading = false; // Tắt loading kể cả khi có lỗi
       });
     }
+  }
+
+  // Lọc danh sách Topic Areas dựa trên certificateId
+  List<dynamic> getTopicsByCertificateId(int certificateId) {
+    return topicAreas.where((topic) => topic['certificateId'] == certificateId).toList();
   }
 
   @override
@@ -72,19 +80,20 @@ class _ModuleMMState extends State<ModuleMM> {
                     var certificate = certificates[index];
                     return GestureDetector(
                       onTap: () {
+                        // Khi nhấn vào chứng chỉ, điều hướng đến trang chi tiết và truyền các thông tin cần thiết
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => CertificateDetail(
                               certificate['certificateName'], // Lấy tên chứng chỉ từ API
                               className: 'C_TS462_1',
-                              level: 'Intermediate', // Ví dụ cấp độ
-                              sessions: 10, // Tổng số buổi
+                              level: certificate['level'] ?? 'Intermediate', // Ví dụ cấp độ, lấy từ API
                               duration: '5 tuần', // Thời gian dự kiến
                               location: 'Google Meet', // Địa điểm
                               fee: '2.500.000', // Chi phí
                               statusfee: 'vnđ/ khóa',
-                              idcertificate: 'C_TS462_MM',
+                              idcertificate: '',
+                              topics: getTopicsByCertificateId(certificate['id']), // Truyền danh sách topic area
                             ),
                           ),
                         );
@@ -114,23 +123,23 @@ class CertificateDetail extends StatelessWidget {
   final String certificate;
   final String className;
   final String level;
-  final int sessions;
   final String duration;
   final String location;
   final String fee;
   final String statusfee;
   final String idcertificate;
+  final List<dynamic> topics; // Danh sách Topic Areas liên quan đến chứng chỉ
 
   CertificateDetail(
     this.certificate, {
     required this.className,
     required this.level,
-    required this.sessions,
     required this.duration,
     required this.location,
     required this.fee,
     required this.statusfee,
     required this.idcertificate,
+    required this.topics, // Nhận danh sách topics từ constructor
   });
 
   @override
@@ -160,8 +169,7 @@ class CertificateDetail extends StatelessWidget {
                     child: Center(
                       child: Image.asset(
                         'assets/images/a1.png', // Đường dẫn đến hình ảnh
-                        fit: BoxFit
-                            .contain, // Điều chỉnh hình ảnh để vừa với vùng chứa
+                        fit: BoxFit.contain, // Điều chỉnh hình ảnh để vừa với vùng chứa
                       ),
                     ),
                   ),
@@ -171,16 +179,13 @@ class CertificateDetail extends StatelessWidget {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
-                  CourseItem(courseName: 'Master Data in SAP MM', session: 3),
-                  CourseItem(courseName: 'Procurement Process', session: 2),
-                  CourseItem(courseName: 'Inventory Management', session: 3),
-                  CourseItem(courseName: 'Invoice Verification', session: 2),
-                  SizedBox(height: 20),
+                  ...topics.map((topic) => CourseItem(courseName: topic['topicName'])).toList(), // Hiển thị các Topic Area
+                  SizedBox(height: 10),
                   Text(
-                    'Tổng số buổi: $sessions                Thời gian dự kiến: $duration\nCấp độ: $level',
+                    'Cấp độ: $level               Thời gian dự kiến: $duration',
                     style: TextStyle(fontSize: 16),
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 15),
                   Text(
                     'Chứng chỉ sau khóa học',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -193,8 +198,7 @@ class CertificateDetail extends StatelessWidget {
                     child: Center(
                       child: Image.asset(
                         'assets/images/certification.jpg', // Đường dẫn đến hình ảnh
-                        fit: BoxFit
-                            .contain, // Điều chỉnh hình ảnh vừa với khung chứa
+                        fit: BoxFit.contain, // Điều chỉnh hình ảnh vừa với khung chứa
                       ),
                     ),
                   ),
@@ -203,6 +207,7 @@ class CertificateDetail extends StatelessWidget {
                     '$idcertificate',
                     style: TextStyle(fontSize: 14),
                   ),
+                  SizedBox(height: 20),
                 ],
               ),
             ),
@@ -223,11 +228,9 @@ class CertificateDetail extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF275998), // Màu nền
                       foregroundColor: Colors.white,
-                      padding:
-                          EdgeInsets.symmetric(vertical: 15), // Chiều cao nút
+                      padding: EdgeInsets.symmetric(vertical: 15), // Chiều cao nút
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(30.0), // Làm tròn góc nút
+                        borderRadius: BorderRadius.circular(30.0), // Làm tròn góc nút
                       ),
                     ),
                     child: Text(
@@ -250,11 +253,9 @@ class CertificateDetail extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF275998), // Màu nền
                       foregroundColor: Colors.white,
-                      padding:
-                          EdgeInsets.symmetric(vertical: 15), // Chiều cao nút
+                      padding: EdgeInsets.symmetric(vertical: 15), // Chiều cao nút
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(30.0), // Làm tròn góc nút
+                        borderRadius: BorderRadius.circular(30.0), // Làm tròn góc nút
                       ),
                     ),
                     child: Text(
@@ -276,9 +277,8 @@ class CertificateDetail extends StatelessWidget {
 
 class CourseItem extends StatelessWidget {
   final String courseName;
-  final int session;
 
-  const CourseItem({required this.courseName, required this.session});
+  const CourseItem({required this.courseName});
 
   @override
   Widget build(BuildContext context) {
@@ -289,11 +289,9 @@ class CourseItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(courseName, style: TextStyle(fontSize: 16)),
-            Text('$session buổi', style: TextStyle(fontSize: 16)),
           ],
         ),
       ),
     );
   }
 }
-
