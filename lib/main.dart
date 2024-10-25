@@ -13,9 +13,9 @@ import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/reset_password_screen.dart';
-import 'screens/register_screen_step2.dart'; // Add this import
 import 'screens/edit_profile_screen.dart';
 import 'screens/change_password_screen.dart'; // Thêm import cho ChangePasswordScreen
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 // cmt
 Future<void> main() async {
@@ -44,13 +44,12 @@ class MyApp extends StatelessWidget {
         '/register': (context) => RegisterScreen(),
         '/forgot-password': (context) => ForgotPasswordScreen(),
         '/reset-password': (context) => ResetPasswordScreen(),
-        '/RegisterScreenStep2' : (context) => RegisterScreenStep2(),
         '/edit-profile': (context) => EditProfileScreen(
           email: 'example@example.com',
           fullName: 'John Doe',
           education: 'Bachelor\'s Degree',
           phoneNumber: '123-456-7890', 
-          password: '',
+          gender: 'Male',
         ), // Thêm route cho EditProfileScreen
         '/change-password': (context) => ChangePasswordScreen(), // Thêm route cho ChangePasswordScreen
 

@@ -5,14 +5,14 @@ class EditProfileScreen extends StatefulWidget {
   final String fullName;
   final String education;
   final String phoneNumber;
-  final String password;
+  final String gender;
 
   EditProfileScreen({
     required this.email,
     required this.fullName,
     required this.education,
     required this.phoneNumber,
-    required this.password,
+    required this.gender,
   });
 
   @override
@@ -20,6 +20,8 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _educationController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   String? _selectedGender;
   final _formKey = GlobalKey<FormState>();
@@ -27,7 +29,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
+    _fullNameController.text = widget.fullName;
+    _educationController.text = widget.education;
     _phoneNumberController.text = widget.phoneNumber;
+    _selectedGender = widget.gender;
   }
 
   void _saveProfile() {
@@ -79,16 +84,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: CircleAvatar(
-                  radius: 40,
-                  child: Text(
-                    widget.fullName[0], // Chữ cái đầu tiên của tên người dùng
-                    style: TextStyle(fontSize: 40),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
               TextField(
                 decoration: InputDecoration(
                   labelText: 'Email',
@@ -102,50 +97,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 readOnly: true,
               ),
               SizedBox(height: 16),
-              TextField(
+              TextFormField(
+                controller: _fullNameController,
                 decoration: InputDecoration(
                   labelText: 'Full Name',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  filled: true,
-                  fillColor: Colors.grey[200],
                 ),
-                controller: TextEditingController(text: widget.fullName),
-                readOnly: true,
               ),
               SizedBox(height: 16),
-              TextField(
+              TextFormField(
+                controller: _educationController,
                 decoration: InputDecoration(
                   labelText: 'Education',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  filled: true,
-                  fillColor: Colors.grey[200],
                 ),
-                controller: TextEditingController(text: widget.education),
-                readOnly: true,
               ),
               SizedBox(height: 16),
               TextFormField(
+                controller: _phoneNumberController,
                 decoration: InputDecoration(
                   labelText: 'Phone Number',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                controller: _phoneNumberController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
-                  }
-                  final phoneRegExp = RegExp(r'^(0|\+84)[3|5|7|8|9][0-9]{8}$');
-                  if (!phoneRegExp.hasMatch(value)) {
-                    return 'Please enter a valid phone number';
-                  }
-                  return null;
-                },
               ),
               SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -182,7 +161,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         filled: true,
                         fillColor: Colors.grey[200],
                       ),
-                      controller: TextEditingController(text: widget.password),
                       readOnly: true,
                     ),
                   ),
