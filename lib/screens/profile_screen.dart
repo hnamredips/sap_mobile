@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sap_mobile/screens/payment.dart';
 import 'edit_profile_screen.dart';
 import 'login_screen.dart';
 
@@ -62,6 +63,10 @@ class ProfileScreen extends StatelessWidget {
             ListTile(
               title: Text('Privacy Policy'),
               onTap: () {
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => Example()),
+                // );
                 // Điều hướng đến trang Privacy Policy
               },
             ),
