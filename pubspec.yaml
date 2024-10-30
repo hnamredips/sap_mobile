@@ -39,6 +39,8 @@ flutter:
   assets:
     - assets/images/saplearn_logo(1).png
     - assets/images/done.png
+    - assets/images/a1.png
+    - assets/images/certification.jpg
 
 
 
