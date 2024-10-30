@@ -117,13 +117,13 @@ class _QuizPageState extends State<Quiz> {
                   ),
                 ],
               ),
-              height: 200, // Cố định chiều cao thẻ câu hỏi
+              height: 150, // Cố định chiều cao thẻ câu hỏi
               child: Center(
                 // Chữ nằm giữa
                 child: Text(
                   questions[currentQuestionIndex].questionText,
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 17,
                     color: Colors.black, // Màu chữ đen
                     fontWeight: FontWeight.normal, // Không in đậm
                   ),
@@ -153,13 +153,13 @@ class _QuizPageState extends State<Quiz> {
                           ? Colors.black
                           : Colors
                               .transparent, // Viền đen xung quanh đáp án đã chọn
-                      width: 5,
+                      width: 3,
                     ),
                   ),
                   minimumSize: Size(
                       double.infinity, 90), // Chiều cao nút bằng thẻ câu hỏi
                   padding: EdgeInsets.symmetric(
-                      vertical: 105), // Điều chỉnh chiều cao nút
+                      vertical: 70), // Điều chỉnh chiều cao nút
                 ),
                 child: Text(
                   'True',
@@ -189,13 +189,13 @@ class _QuizPageState extends State<Quiz> {
                           ? Colors.black
                           : Colors
                               .transparent, // Viền đen xung quanh đáp án đã chọn
-                      width: 5,
+                      width: 3,
                     ),
                   ),
                   minimumSize: Size(
                       double.infinity, 90), // Chiều cao nút bằng thẻ câu hỏi
                   padding: EdgeInsets.symmetric(
-                      vertical: 105), // Điều chỉnh chiều cao nút
+                      vertical: 70), // Điều chỉnh chiều cao nút
                 ),
                 child: Text(
                   'False',
@@ -307,7 +307,7 @@ class _QuizPageState extends State<Quiz> {
                       backgroundColor:
                           Color(0xFF275998), // Thay đổi màu nền nút
                       padding: EdgeInsets.symmetric(
-                          horizontal: 32, vertical: 12), // Điều chỉnh padding
+                          horizontal: 15, vertical: 10), // Điều chỉnh padding
                       textStyle:
                           TextStyle(fontSize: 18), // Điều chỉnh kích cỡ chữ
                     ),
@@ -327,7 +327,7 @@ class _QuizPageState extends State<Quiz> {
                       backgroundColor:
                           Color(0xFF275998), // Thay đổi màu nền nút
                       padding: EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 12), // Điều chỉnh padding
+                          horizontal: 15, vertical: 10), // Điều chỉnh padding
                       textStyle:
                           TextStyle(fontSize: 18), // Điều chỉnh kích cỡ chữ
                     ),
