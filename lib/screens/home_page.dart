@@ -1,4 +1,3 @@
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart'; // Thêm DIO để gọi API
@@ -18,8 +17,10 @@ class _HomePageState extends State<HomePage> {
   bool isLoading = true; // Trạng thái loading
   bool isLoadingCertificates = true; // Trạng thái loading cho certificates
   bool isLoadingEnrolled = true; // Trạng thái loading cho Enrolled Certificates
-  Map<int, int> courseNames = {}; // Để lưu courseId với certificateId từ API Get All Course
-  Map<int, String> certificateNames = {}; // Để lưu certificateId với certificateName từ API Certificate
+  Map<int, int> courseNames =
+      {}; // Để lưu courseId với certificateId từ API Get All Course
+  Map<int, String> certificateNames =
+      {}; // Để lưu certificateId với certificateName từ API Certificate
 
   @override
   void initState() {
@@ -72,17 +73,20 @@ class _HomePageState extends State<HomePage> {
         var data = response.data['\$values'];
         print('Certificates fetched: ${data.length} certificates found.');
 
-        // Sắp xếp danh sách theo độ dài certificateName và chọn 3 certificate ngắn nhất
-        List<dynamic> sortedCertificates =
-            data.map<dynamic>((certificate) => certificate).toList();
+        // Lọc các certificate có certificateName từ 5 đến dưới 8 ký tự
+        List<dynamic> filteredCertificates = data
+            .where((certificate) =>
+                certificate['certificateName'].length >= 15 &&
+                certificate['certificateName'].length < 50)
+            .toList();
 
-        sortedCertificates.sort((a, b) =>
+        // Sắp xếp danh sách theo độ dài certificateName
+        filteredCertificates.sort((a, b) =>
             a['certificateName'].length.compareTo(b['certificateName'].length));
 
-        // Lấy ra 3 certificate có certificateName ngắn nhất
+        // Lấy ra các certificate đã lọc
         setState(() {
-          topCertificates =
-              sortedCertificates.take(3).toList(); // Lấy 3 certificates
+          topCertificates = filteredCertificates; // Gán danh sách đã lọc
           isLoadingCertificates = false; // Tắt loading sau khi nhận dữ liệu
         });
       } else {
@@ -107,15 +111,15 @@ class _HomePageState extends State<HomePage> {
         'https://swdsapelearningapi.azurewebsites.net/api/Course/get-all',
       );
 
-      if (courseResponse.statusCode == 200 && courseResponse.data.containsKey('\$values')) {
+      if (courseResponse.statusCode == 200 &&
+          courseResponse.data.containsKey('\$values')) {
         var courseData = courseResponse.data['\$values'];
         print('Courses fetched: ${courseData.length} courses found.');
 
         // Tạo Map chứa courseId với certificateId
         setState(() {
           courseNames = {
-            for (var course in courseData)
-              course['id']: course['certificateId']
+            for (var course in courseData) course['id']: course['certificateId']
           };
         });
       } else {
@@ -134,9 +138,11 @@ class _HomePageState extends State<HomePage> {
         'https://swdsapelearningapi.azurewebsites.net/api/Certificate/get-all',
       );
 
-      if (certificateResponse.statusCode == 200 && certificateResponse.data.containsKey('\$values')) {
+      if (certificateResponse.statusCode == 200 &&
+          certificateResponse.data.containsKey('\$values')) {
         var certificateData = certificateResponse.data['\$values'];
-        print('Certificates fetched: ${certificateData.length} certificates found.');
+        print(
+            'Certificates fetched: ${certificateData.length} certificates found.');
 
         // Tạo Map chứa certificateId với certificateName
         setState(() {
@@ -157,82 +163,90 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchEnrolledCertificates() async {
     try {
       print('Fetching enrolled certificates...');
-      // Gọi API User để lấy danh sách enrollment của user
+
+      // Bước 1: Lấy danh sách người dùng và tìm userId hiện tại
       var userResponse = await Dio().get(
         'https://swdsapelearningapi.azurewebsites.net/api/User/api/users',
       );
 
       if (userResponse.statusCode == 200) {
         var userData = userResponse.data;
-        print('User data fetched.');
 
-        // Kiểm tra nếu 'enrollments' không null và chứa trường '$values'
-        if (userData['enrollments'] != null && userData['enrollments']['\$values'] != null) {
-          var userEnrollments = userData['enrollments']['\$values'];
-          print('User enrollments fetched: ${userEnrollments.length} enrollments found.');
+        // In toàn bộ userData để kiểm tra cấu trúc
+        print('User Data: $userData');
 
-          if (userEnrollments.isEmpty) {
-            setState(() {
-              isLoadingEnrolled = false; // Tắt loading nếu không có enrollment
-            });
-            return;
+        // Tìm userId "S71990" từ danh sách người dùng trong "$values"
+        String? currentUserId;
+        if (userData.containsKey('\$values')) {
+          for (var user in userData['\$values']) {
+            if (user['id'] == 'S71990') {
+              currentUserId = user['id'];
+              break;
+            }
           }
+        }
 
-          // Lấy tất cả thông tin enrollment từ API
+        // Kiểm tra nếu tìm thấy userId
+        if (currentUserId != null) {
+          print('Current User ID: $currentUserId'); // Kiểm tra giá trị userId
+
+          // Bước 2: Gọi API Enrollment để lấy danh sách đăng ký
           var enrollmentResponse = await Dio().get(
             'https://swdsapelearningapi.azurewebsites.net/api/Enrollment/get-all',
           );
 
           if (enrollmentResponse.statusCode == 200) {
             var enrollmentsData = enrollmentResponse.data['\$values'];
-            print('Enrollments fetched: ${enrollmentsData.length} enrollments found.');
 
-            // Lọc ra các chứng chỉ mà user đã thanh toán thành công (Confirmed)
+            // Lọc danh sách enrollments theo userId hiện tại và status là "Confirmed"
             var confirmedEnrollments = enrollmentsData.where((enrollment) {
-              return userEnrollments.any((userEnrollment) =>
-                  userEnrollment['id'] == enrollment['id'] &&
-                  enrollment['status'] == 'Confirmed'); // Kiểm tra trạng thái thanh toán
+              return enrollment['userId'] == currentUserId &&
+                  enrollment['status'] == 'Confirmed';
             }).toList();
 
-            if (confirmedEnrollments.isNotEmpty) {
-              // Kết hợp courseId với certificateName thông qua certificateId
-              setState(() {
-                enrolledCertificates = confirmedEnrollments.map((enrollment) {
-                  var courseId = enrollment['courseId'];
-                  var certificateId = courseNames[courseId];
-                  var certificateName = certificateNames[certificateId] ?? 'Unknown Certificate';
-                  print('Confirmed enrollment: CourseId: $courseId, CertificateName: $certificateName');
-                  return {
-                    'courseId': courseId,
-                    'certificateName': certificateName,
-                    'status': enrollment['status'],
-                  };
-                }).toList();
-                isLoadingEnrolled = false;
-              });
-            } else {
-              print('No confirmed enrollments found.');
-              setState(() {
-                isLoadingEnrolled = false; // Không có chứng chỉ nào đã thanh toán
-              });
+            // Bước 3: Kết hợp courseId với certificateName thông qua certificateId
+            List<Map<String, dynamic>> enrolledCerts = [];
+            for (var enrollment in confirmedEnrollments) {
+              int courseId = enrollment['courseId'];
+
+              // Kiểm tra courseId có trong courseNames
+              if (courseNames.containsKey(courseId)) {
+                int certificateId = courseNames[courseId]!;
+                String certificateName =
+                    certificateNames[certificateId] ?? 'Unknown Certificate';
+
+                enrolledCerts.add({
+                  'courseId': courseId,
+                  'certificateName': certificateName,
+                  'status': enrollment['status'],
+                });
+              } else {
+                print('Course ID $courseId không tìm thấy trong courseNames.');
+              }
             }
+
+            // Cập nhật enrolledCertificates và tắt loading
+            setState(() {
+              enrolledCertificates = enrolledCerts;
+              isLoadingEnrolled = false;
+            });
           } else {
+            print("Error fetching enrollments data.");
             setState(() {
               isLoadingEnrolled = false; // Tắt loading nếu gặp lỗi
             });
-            print("Error fetching enrollments data.");
           }
         } else {
-          print("No enrollments found for the user.");
+          print("User ID 'S71990' not found in user data.");
           setState(() {
-            isLoadingEnrolled = false; // Tắt loading nếu không có enrollments
+            isLoadingEnrolled = false; // Tắt loading nếu không tìm thấy userId
           });
         }
       } else {
+        print("Error fetching user data.");
         setState(() {
           isLoadingEnrolled = false; // Tắt loading nếu gặp lỗi
         });
-        print("Error fetching user data.");
       }
     } catch (e) {
       print('Error fetching enrolled certificates: $e');
@@ -356,7 +370,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              SizedBox(height: 6),
+              SizedBox(height: 12),
 
               // Categories Slider với moduleNames từ API
               isLoading
@@ -425,10 +439,11 @@ class _HomePageState extends State<HomePage> {
                             );
                           }).toList(),
                         ),
-              SizedBox(height: 12),
+              SizedBox(height: 16),
 
               // Top Certificate List
-              Text('Top Certificates', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text('Top Certificates',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               isLoadingCertificates
                   ? Center(child: CircularProgressIndicator())
                   : topCertificates.isEmpty
@@ -436,8 +451,8 @@ class _HomePageState extends State<HomePage> {
                       : Column(
                           children: topCertificates.map((certificate) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 1.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 1.0),
                               child: SizedBox(
                                 width: double.infinity,
                                 child: Card(
@@ -459,10 +474,11 @@ class _HomePageState extends State<HomePage> {
                           }).toList(),
                         ),
 
-              SizedBox(height: 12),
+              SizedBox(height: 16),
 
               // Enrolled Certificate List
-              Text('Enrolled Certificates', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text('Enrolled Certificates',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               SizedBox(height: 6),
               isLoadingEnrolled
                   ? Center(child: CircularProgressIndicator())
@@ -471,16 +487,17 @@ class _HomePageState extends State<HomePage> {
                       : Column(
                           children: enrolledCertificates.map((enrollment) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 1.0),
                               child: SizedBox(
                                 width: double.infinity,
                                 child: Card(
                                   color: Color(0xFF275998),
-                                  margin: EdgeInsets.all(6),
+                                  margin: EdgeInsets.all(4),
                                   child: Padding(
                                     padding: EdgeInsets.all(16),
                                     child: Text(
-                                      'Course: ${enrollment['certificateName']}',
+                                      enrollment['certificateName'],
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 16,

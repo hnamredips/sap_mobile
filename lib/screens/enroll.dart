@@ -79,7 +79,7 @@ class _EnrollPageState extends State<EnrollPage> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Wrap(
-                spacing: 2.0, // Khoảng cách giữa các ClassCard theo chiều ngang
+                spacing: 0, // Khoảng cách giữa các ClassCard theo chiều ngang
                 runSpacing: 2.0, // Khoảng cách giữa các hàng ClassCard
                 children: [
                   if (showOnline) ...[
@@ -310,8 +310,8 @@ class ClassCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap, // Gọi hàm khi người dùng nhấn vào thẻ
       child: SizedBox(
-        width: 195,
-        height: 240,
+        width: 185, //195
+        height: 240, //240
         child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -339,7 +339,7 @@ class ClassCard extends StatelessWidget {
                     Text(
                       isOnline ? 'Online' : 'Offline',
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 12,
                         color: isOnline ? Colors.green : Colors.grey,
                       ),
                     ),
