@@ -22,12 +22,11 @@ class _LoginScreenState extends State<LoginScreen> {
     'https://www.googleapis.com/auth/contacts.readonly',
   ]);
 
-  // Hàm để gọi API đăng nhập với Google
   Future<void> _loginWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        return;
+        return; // Nếu người dùng huỷ đăng nhập
       }
       googleUser.authentication.then((googleAuth) async {
         final credential = GoogleAuthProvider.credential(
@@ -37,44 +36,21 @@ class _LoginScreenState extends State<LoginScreen> {
         await FirebaseAuth.instance.signInWithCredential(credential);
         User? user = FirebaseAuth.instance.currentUser;
 
+        // Lấy ID Token từ Firebase
         final String? idToken = await user?.getIdToken();
-        print('Token ne: ' + idToken.toString());
+        print('Token ne: $idToken'); // Kiểm tra ID Token
 
-        var dio = Dio();
-        var response = await dio.post(
+        // Thêm ID Token vào header của Dio
+        _dio.options.headers['Authorization'] = 'Bearer $idToken';
+
+        // Gọi API với header Authorization chứa ID Token
+        var response = await _dio.post(
           'https://swdsapelearningapi.azurewebsites.net/api/User/login-by-google',
-          data: {
-            'idToken': idToken,
-          },
-          options: Options(
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          ),
+          data: '"$idToken"', // Bao quanh idToken bằng dấu ngoặc kép
         );
 
         if (response.statusCode == 200) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Google Sign-In Successful'),
-                content: Text('You have signed in with Google successfully.'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
-                    },
-                    child: Text('OK'),
-                  ),
-                ],
-              );
-            },
-          );
+          Navigator.pushReplacementNamed(context, '/home');
         } else {
           _showErrorDialog(context, "Google Sign-In Failed. Please try again.");
         }
@@ -89,6 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+/////////////////////////////////////
   // Hàm để gọi API đăng nhập bằng email/password
   Future<void> _login(BuildContext context) async {
     final String username = _usernameController.text;
@@ -299,3 +276,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+
+
