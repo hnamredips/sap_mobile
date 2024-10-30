@@ -1,6 +1,4 @@
-
 import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -44,10 +42,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
         var dio = Dio();
         var response = await dio.post(
-          'https://swdsapelearningapi.azurewebsites.net/api/auth/google-auth/signin',
+          'https://swdsapelearningapi.azurewebsites.net/api/User/login-by-google',
           data: {
             'idToken': idToken,
           },
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          ),
         );
 
         if (response.statusCode == 200) {

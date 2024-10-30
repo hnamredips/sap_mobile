@@ -255,7 +255,7 @@ class _HomePageState extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        ModuleMM()), // Điều hướng đến SearchScreen
+                        ModuleMM()),
               );
             },
           ),
