@@ -1,41 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
-
 class SearchScreen extends StatefulWidget {
   @override
   _SearchScreenState createState() => _SearchScreenState();
 }
 
-
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<String> _modules = ['SD', 'PP', 'MM', 'AI', 'FI', 'CO', 'PM', 'HCM', 'BI', 'BW'];
+  List<Map<String, dynamic>> _modules = []; // Danh sách module với id và moduleName
   List<String> _levels = ['Associate', 'Specialist', 'Professional'];
   List<String> _selectedModules = [];
   List<String> _selectedLevels = [];
   List<Map<String, dynamic>> _certificates = [];
   List<Map<String, dynamic>> _filteredCertificates = [];
 
-
   @override
   void initState() {
     super.initState();
+    fetchModules(); // Gọi API để lấy danh sách modules khi khởi động
     fetchCertificates(); // Gọi API để lấy danh sách certificates khi khởi động
   }
 
+  // Hàm gọi API để lấy danh sách modules từ API
+  Future<void> fetchModules() async {
+    try {
+      var response = await Dio().get(
+        'https://swdsapelearningapi.azurewebsites.net/api/SapModule/get-all',
+      );
 
-  // Hàm gọi API bằng Dio để lấy danh sách certificates
+      // In ra dữ liệu nhận được từ API để kiểm tra
+      print("Modules response data: ${response.data}");
+
+      if (response.data != null) {
+        setState(() {
+          _modules = List<Map<String, dynamic>>.from(response.data['\$values']);
+        });
+      }
+    } catch (e) {
+      print('Error fetching modules: $e');
+    }
+  }
+
+  // Hàm gọi API để lấy danh sách certificates
   Future<void> fetchCertificates() async {
     try {
       var response = await Dio().get(
         'https://swdsapelearningapi.azurewebsites.net/api/Certificate/get-all',
       );
 
-
       // In ra dữ liệu nhận được từ API để kiểm tra
-      print("Response data: ${response.data}");
-
+      print("Certificates response data: ${response.data}");
 
       if (response.data != null && response.data['\$values'] != null) {
         setState(() {
@@ -48,6 +63,12 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  // Hàm lấy tên module dựa trên module ID
+String getModuleNameById(int moduleId) {
+  final module = _modules.firstWhere((mod) => mod['id'] == moduleId, orElse: () => {});
+  return module.isNotEmpty ? module['moduleName'] : 'Unknown';
+}
+
 
   // Hàm filter certificates theo query search, module và level
   void _filterCertificates() {
@@ -55,20 +76,22 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       _filteredCertificates = _certificates.where((certificate) {
         bool matchesQuery = certificate['certificateName']!.toLowerCase().contains(query);
-        bool matchesModule = _selectedModules.isEmpty || _selectedModules.contains(certificate['module']);
+       
+        // Kiểm tra nếu certificate có moduleIds và module nằm trong selectedModules
+        bool matchesModule = _selectedModules.isEmpty ||
+            certificate['moduleIds']['\$values'].any((id) => _selectedModules.contains(getModuleNameById(id)));
+       
         bool matchesLevel = _selectedLevels.isEmpty || _selectedLevels.contains(certificate['level']);
         return matchesQuery && matchesModule && matchesLevel;
       }).toList();
     });
   }
 
-
   void _selectAllModules() {
     setState(() {
-      _selectedModules = List.from(_modules);
+      _selectedModules = _modules.map((module) => module['moduleName'] as String).toList();
     });
   }
-
 
   void _selectAllLevels() {
     setState(() {
@@ -76,20 +99,17 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-
   void _clearAllModules() {
     setState(() {
       _selectedModules.clear();
     });
   }
 
-
   void _clearAllLevels() {
     setState(() {
       _selectedLevels.clear();
     });
   }
-
 
   void _showFilterDrawer(BuildContext context) {
     showModalBottomSheet(
@@ -124,14 +144,14 @@ class _SearchScreenState extends State<SearchScreen> {
                     spacing: 8.0,
                     children: _modules.map((module) {
                       return FilterChip(
-                        label: Text(module),
-                        selected: _selectedModules.contains(module),
+                        label: Text(module['moduleName']),
+                        selected: _selectedModules.contains(module['moduleName']),
                         onSelected: (bool selected) {
                           setModalState(() {
                             if (selected) {
-                              _selectedModules.add(module);
+                              _selectedModules.add(module['moduleName']);
                             } else {
-                              _selectedModules.removeWhere((String name) => name == module);
+                              _selectedModules.removeWhere((name) => name == module['moduleName']);
                             }
                           });
                         },
@@ -167,7 +187,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             if (selected) {
                               _selectedLevels.add(level);
                             } else {
-                              _selectedLevels.removeWhere((String name) => name == level);
+                              _selectedLevels.removeWhere((name) => name == level);
                             }
                           });
                         },
@@ -197,7 +217,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ElevatedButton(
                         onPressed: () {
                           _filterCertificates();
-                          Navigator.pop(context); // Close the filter modal
+                          Navigator.pop(context); // Đóng filter modal
                         },
                         child: Text('Apply'),
                         style: ElevatedButton.styleFrom(
@@ -219,7 +239,6 @@ class _SearchScreenState extends State<SearchScreen> {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -274,9 +293,12 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: ListView.builder(
                   itemCount: _filteredCertificates.length,
                   itemBuilder: (context, index) {
+                    String moduleNames = _filteredCertificates[index]['moduleIds']['\$values']
+                        .map((id) => getModuleNameById(id))
+                        .join(', ');
                     return ListTile(
                       title: Text(_filteredCertificates[index]['certificateName'] ?? ''),
-                      subtitle: Text('Module: ${_filteredCertificates[index]['module']}, Level: ${_filteredCertificates[index]['level']}'),
+                      subtitle: Text('Module: $moduleNames, Level: ${_filteredCertificates[index]['level']}'),
                     );
                   },
                 ),
@@ -288,5 +310,6 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 }
+
 
 

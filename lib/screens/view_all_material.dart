@@ -133,9 +133,3 @@ class _TestPageState extends State<ViewAllMaterial> {
     );
   }
 }
-<<<<<<< HEAD
-=======
-
-
-
->>>>>>> origin/bao

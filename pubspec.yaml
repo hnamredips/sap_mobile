@@ -9,6 +9,7 @@ environment:
     sdk: ^3.1.1
 
 dependencies:
+
   flutter:
     sdk: flutter
   english_words: ^4.0.0
@@ -18,11 +19,16 @@ dependencies:
   carousel_slider: ^5.0.0
   dio: ^4.0.0
   google_sign_in: ^6.2.1
+  google_api_availability: 5.0.0
   firebase_auth:
   firebase_core: ^3.3.0
-   google_sign_in: ^5.0.7
+  firebase_analytics: ^11.3.3
   flutter_web_plugins:
     sdk: flutter
+  firebase_messaging: ^15.1.3
+  flutter_local_notifications: ^17.2.4
+  permission_handler: ^11.3.1
+
 dev_dependencies:
     flutter_test:
         sdk: flutter
@@ -33,6 +39,5 @@ flutter:
   assets:
     - assets/images/saplearn_logo(1).png
     - assets/images/done.png
-
-
-
+    - assets/images/a1.png
+    - assets/images/certification.jpg

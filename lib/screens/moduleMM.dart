@@ -182,8 +182,8 @@ class CertificateDetail extends StatelessWidget {
                   ...topics.map((topic) => CourseItem(courseName: topic['topicName'])).toList(), // Hiển thị các Topic Area
                   SizedBox(height: 10),
                   Text(
-                    'Cấp độ: $level               Thời gian dự kiến: $duration',
-                    style: TextStyle(fontSize: 16),
+                    'Cấp độ: $level                  Thời gian dự kiến: $duration',
+                    style: TextStyle(fontSize: 13),
                   ),
                   SizedBox(height: 15),
                   Text(
