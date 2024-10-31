@@ -36,6 +36,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, // Xóa mũi tên quay lại
         title: Text(
           'Schedule',
           style: TextStyle(

@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'dart:developer';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart'; // Import Google Sign-In
 import 'home_page.dart'; // Import trang homepage
@@ -17,57 +19,59 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _agreeToTerms = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+    bool _obscureText = true;
+  bool _isLoading = false;
 
-final GoogleSignIn _googleSignIn = GoogleSignIn(
-  clientId: '575550351850-ktdi1a5amhfospkj3ohrkdqdejrkords.apps.googleusercontent.com',
-  scopes: ['email'],
-);
+GoogleSignIn _googleSignIn = GoogleSignIn(scopes: <String>[
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ]);
 
 Future<void> _signUpWithGoogle(BuildContext context) async {
   try {
     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
     if (googleUser == null) {
-      // User canceled the sign-in process
-      print("Google Sign-In cancelled");
-      return;
+      return; // Người dùng hủy đăng nhập
     }
 
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-    final String? idToken = googleAuth.idToken;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
 
-    if (idToken == null) {
-      // No idToken received
-      _showErrorDialog(context, "Failed to retrieve idToken. Please try again.");
-      return;
-    }
+    await FirebaseAuth.instance.signInWithCredential(credential);
+    User? user = FirebaseAuth.instance.currentUser;
 
-    // Sending idToken to the server
+    // Lấy ID Token từ Firebase
+    final String? idToken = await user?.getIdToken();
+    print('Token ne: $idToken'); // Kiểm tra ID Token
+
+    // Tạo một đối tượng Dio mới và thêm ID Token vào header
     var dio = Dio();
-    var response = await dio.get(
-      'https://swdsapelearningapi.azurewebsites.net/api/auth/google-auth/signin',
-      queryParameters: {
-        'idToken': idToken,
-      },
+    dio.options.headers['Authorization'] = 'Bearer $idToken';
+
+    // Gọi API với header Authorization chứa ID Token
+    var response = await dio.post(
+      'https://swdsapelearningapi.azurewebsites.net/api/User/login-by-google',
+      data: '"$idToken"', // Bao quanh idToken bằng dấu ngoặc kép
     );
 
     if (response.statusCode == 200) {
-      print("Google Sign-In successful: ${response.data}");
-      _showSuccessDialog(context, 'Google Sign-In Successful');
-    } else {
-      print("Google Sign-In failed: ${response.statusMessage}");
-      _showErrorDialog(context, "Google Sign-In Failed. Please try again.");
-    }
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          _showErrorDialog(context, "Google Sign-In Failed. Please try again.");
+        }
   } catch (e) {
-    print("Error during Google Sign-In: $e");
+    print(e.toString());
     String errorMessage = 'An unknown error occurred';
     if (e is DioError) {
-  print("DioError: ${e.response?.data}");
-  print("Status Code: ${e.response?.statusCode}");
-  print("Headers: ${e.response?.headers}");
-}
+      errorMessage = 'Error: ${e.message}';
+    }
     _showErrorDialog(context, errorMessage);
   }
 }
+
 
 
 void _showSuccessDialog(BuildContext context, String message) {
@@ -94,8 +98,6 @@ void _showSuccessDialog(BuildContext context, String message) {
   );
 }
 
-
-  // Hàm để gọi API đăng ký bằng email/password
   // Hàm để gọi API đăng ký bằng email/password
 Future<void> _register(BuildContext context) async {
   if (_formKey.currentState!.validate() && _agreeToTerms) {
