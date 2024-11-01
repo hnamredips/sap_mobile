@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'home_page.dart'; // Import trang homepage
+import 'package:shared_preferences/shared_preferences.dart'; // Thêm thư viện để sử dụng SharedPreferences
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -35,6 +36,10 @@ class _LoginScreenState extends State<LoginScreen> {
         );
         await FirebaseAuth.instance.signInWithCredential(credential);
         User? user = FirebaseAuth.instance.currentUser;
+
+        // Lưu email của người dùng vào SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('currentEmail', user?.email ?? '');
 
         // Lấy ID Token từ Firebase
         final String? idToken = await user?.getIdToken();
@@ -86,6 +91,8 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (response.statusCode == 200) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('currentEmail', username);
         Navigator.pushReplacementNamed(context, '/home');
       } else {
         _showErrorDialog(context, "Login failed. Incorrect credentials.");
@@ -276,6 +283,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-
-

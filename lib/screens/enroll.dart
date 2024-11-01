@@ -22,7 +22,7 @@ class _EnrollPageState extends State<EnrollPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chọn lớp học'),
+        title: Text('Choose class'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -224,8 +224,8 @@ class _EnrollPageState extends State<EnrollPage> {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               selectedClass != null
-                  ? 'Đã chọn lớp: $selectedClass'
-                  : 'Chưa chọn lớp nào',
+                  ? 'Course selected: $selectedClass'
+                  : 'No class selected',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -257,7 +257,7 @@ class _EnrollPageState extends State<EnrollPage> {
                       );
                     }
                   : null, // Nếu chưa chọn lớp, nút sẽ bị disable
-              child: Text('Tiếp tục'),
+              child: Text('Continue'),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
                 backgroundColor: selectedClass != null

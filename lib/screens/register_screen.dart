@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart'; // Import Google Sign-In
 import 'home_page.dart'; // Import trang homepage
 import 'login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Thêm thư viện để sử dụng SharedPreferences
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -42,6 +43,10 @@ Future<void> _signUpWithGoogle(BuildContext context) async {
 
     await FirebaseAuth.instance.signInWithCredential(credential);
     User? user = FirebaseAuth.instance.currentUser;
+
+    // Lưu email của người dùng vào SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('currentEmail', user?.email ?? '');
 
     // Lấy ID Token từ Firebase
     final String? idToken = await user?.getIdToken();
@@ -114,6 +119,7 @@ Future<void> _register(BuildContext context) async {
 
       if (response.statusCode == 200) {
         print("Registration successful: ${response.data}");
+        
         showDialog(
           context: context,
           builder: (BuildContext context) {
