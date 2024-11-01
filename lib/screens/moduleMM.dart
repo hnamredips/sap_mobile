@@ -22,36 +22,53 @@ class _ModuleMMState extends State<ModuleMM> {
   }
 
   // Hàm gọi API bằng Dio để lấy cả Certificates và Topic Areas
-  Future<void> fetchCertificatesAndTopics() async {
-    try {
-      var certificateResponse = await Dio().get(
-        'https://swdsapelearningapi.azurewebsites.net/api/Certificate/get-all',
-      );
-      var topicAreaResponse = await Dio().get(
-        'https://swdsapelearningapi.azurewebsites.net/api/TopicArea/get-all',
-      );
+ Future<void> fetchCertificatesAndTopics() async {
+  try {
+    var certificateResponse = await Dio().get(
+      'https://swdsapelearningapi.azurewebsites.net/api/Certificate/get-all',
+    );
+    var topicAreaResponse = await Dio().get(
+      'https://swdsapelearningapi.azurewebsites.net/api/TopicArea/get-all',
+    );
 
-      // Kiểm tra dữ liệu phản hồi từ API
-      if (certificateResponse.data != null && certificateResponse.data.containsKey('\$values') &&
-          topicAreaResponse.data != null && topicAreaResponse.data.containsKey('\$values')) {
-        setState(() {
-          certificates = List.from(certificateResponse.data['\$values']); // Lấy dữ liệu certificates
-          topicAreas = List.from(topicAreaResponse.data['\$values']); // Lấy dữ liệu topic areas
-          isLoading = false; // Tắt trạng thái loading
-        });
-      } else {
-        print('Error: Dữ liệu trả về không chứa trường "\$values"');
-        setState(() {
-          isLoading = false;
-        });
-      }
-    } catch (e) {
-      print('Error fetching data: $e');
+    // Kiểm tra dữ liệu phản hồi từ API
+    if (certificateResponse.data != null &&
+        certificateResponse.data.containsKey('\$values') &&
+        topicAreaResponse.data != null &&
+        topicAreaResponse.data.containsKey('\$values')) {
+     
+      // Lọc certificates để chỉ giữ các chứng chỉ có moduleId chứa 14
+      var filteredCertificates = certificateResponse.data['\$values']
+          .where((certificate) =>
+              certificate['moduleIds'] != null &&
+              certificate['moduleIds'].containsKey('\$values') &&
+              certificate['moduleIds']['\$values'].contains(14)
+          ).toList();
+
+      var filteredTopicAreas = topicAreaResponse.data['\$values']
+          .where((topic) => topic['certificateId'] != null &&
+              filteredCertificates.any((cert) => cert['id'] == topic['certificateId'])
+          ).toList();
+
       setState(() {
-        isLoading = false; // Tắt loading kể cả khi có lỗi
+        certificates = filteredCertificates; // Chứng chỉ có moduleId = 14
+        topicAreas = filteredTopicAreas; // Lấy topic areas có liên quan đến các chứng chỉ lọc được
+        isLoading = false; // Tắt trạng thái loading
+      });
+    } else {
+      print('Error: Dữ liệu trả về không chứa trường "\$values"');
+      setState(() {
+        isLoading = false;
       });
     }
+  } catch (e) {
+    print('Error fetching data: $e');
+    setState(() {
+      isLoading = false; // Tắt loading kể cả khi có lỗi
+    });
   }
+}
+
 
   // Lọc danh sách Topic Areas dựa trên certificateId
   List<dynamic> getTopicsByCertificateId(int certificateId) {
@@ -88,7 +105,7 @@ class _ModuleMMState extends State<ModuleMM> {
                               certificate['certificateName'], // Lấy tên chứng chỉ từ API
                               className: 'C_TS462_1',
                               level: certificate['level'] ?? 'Intermediate', // Ví dụ cấp độ, lấy từ API
-                              duration: '5 tuần', // Thời gian dự kiến
+                              duration: '5 weeks', // Thời gian dự kiến
                               location: 'Google Meet', // Địa điểm
                               fee: '2.500.000', // Chi phí
                               statusfee: 'vnđ/ khóa',
@@ -175,19 +192,19 @@ class CertificateDetail extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
                   Text(
-                    'Các khóa học trong Certificate',
+                    'Courses in Certificate',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
                   ...topics.map((topic) => CourseItem(courseName: topic['topicName'])).toList(), // Hiển thị các Topic Area
                   SizedBox(height: 10),
                   Text(
-                    'Cấp độ: $level                  Thời gian dự kiến: $duration',
-                    style: TextStyle(fontSize: 13),
+                    'Level: $level',
+                    style: TextStyle(fontSize: 18),
                   ),
                   SizedBox(height: 15),
                   Text(
-                    'Chứng chỉ sau khóa học',
+                    'Certificate',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
@@ -259,7 +276,7 @@ class CertificateDetail extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'Đăng ký',
+                      'Enroll',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -295,3 +312,4 @@ class CourseItem extends StatelessWidget {
     );
   }
 }
+
