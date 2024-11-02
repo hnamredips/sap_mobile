@@ -20,6 +20,7 @@ class _EnrollPageState extends State<EnrollPage> {
   String? selectedsessions;
   String? selectedduration;
   bool showOnline = true;
+  String? selectedinstructorName;
   List<dynamic> onlineClasses = [];
   List<dynamic> offlineClasses = [];
 
@@ -182,16 +183,14 @@ class _EnrollPageState extends State<EnrollPage> {
               padding: const EdgeInsets.all(16.0),
               child: Wrap(
                 spacing: 0,
-                runSpacing: 2.0,
+                runSpacing: 5.0,
                 children: [
                   if (showOnline && onlineClasses.isNotEmpty) ...[
                     for (var classData in onlineClasses) ...[
                       ClassCard(
                         title: classData['courseName'] ?? 'Không có tên',
-                        certificateName: classData['certificateName'] ??
-                            'Không có thông tin',
-                        instructorName:
-                            classData['instructorName'] ?? 'Không có thông tin',
+                        certificateName: classData['certificateName'] ?? 'Không có thông tin',
+                        instructorName: classData['instructorName'] ?? 'Không có thông tin',
                         isOnline: true,
                         startTime: formatDate(classData['startTime']),
                         endTime: formatDate(classData['endTime']),
@@ -201,8 +200,16 @@ class _EnrollPageState extends State<EnrollPage> {
                         onTap: () {
                           setState(() {
                             selectedClass = classData['courseName'];
+                            selectedTime = formatDate(classData['startTime']) + ' - ' + formatDate(classData['endTime']);
+                            selectedStudents = 'Thông tin học viên';
+                            selectedLocation = classData['location'] ?? 'Không có thông tin';
+                            selectedFee = formatCurrency(classData['price']);
+                            selectediddcertificate = classData['certificateName'] ?? 'Không có thông tin';
+                            selectedlevel = classData['level'] ?? 'Không có thông tin';
+                            selectedsessions = classData['sessions'].toString();
+                            selectedduration = classData['duration'] ?? 'Không có thông tin';
+                            selectedinstructorName = classData['instructorName'] ?? 'Không có thông tin';
                           });
-                          print("Selected class data: $selectedClass");
                         },
                       ),
                     ],
@@ -210,10 +217,8 @@ class _EnrollPageState extends State<EnrollPage> {
                     for (var classData in offlineClasses) ...[
                       ClassCard(
                         title: classData['courseName'] ?? 'Không có tên',
-                        certificateName: classData['certificateName'] ??
-                            'Không có thông tin',
-                        instructorName:
-                            classData['instructorName'] ?? 'Không có thông tin',
+                        certificateName: classData['certificateName'] ?? 'Không có thông tin',
+                        instructorName: classData['instructorName'] ?? 'Không có thông tin',
                         isOnline: false,
                         startTime: formatDate(classData['startTime']),
                         endTime: formatDate(classData['endTime']),
@@ -223,15 +228,19 @@ class _EnrollPageState extends State<EnrollPage> {
                         onTap: () {
                           setState(() {
                             selectedClass = classData['courseName'];
+                            selectedTime = formatDate(classData['startTime']) + ' - ' + formatDate(classData['endTime']);
+                            selectedStudents = 'Thông tin học viên';
+                            selectedLocation = classData['location'] ?? 'Không có thông tin';
+                            selectedFee = formatCurrency(classData['price']);
+                            selectediddcertificate = classData['certificateName'] ?? 'Không có thông tin';
+                            selectedlevel = classData['level'] ?? 'Không có thông tin';
+                            selectedsessions = classData['sessions'].toString();
+                            selectedduration = classData['duration'] ?? 'Không có thông tin';
+                            selectedinstructorName = classData['instructorName'] ?? 'Không có thông tin';
                           });
-                          print("Selected class data: $selectedClass");
                         },
                       ),
                     ],
-                  ] else if (showOnline && onlineClasses.isEmpty) ...[
-                    Center(child: Text("Không có lớp online")),
-                  ] else if (!showOnline && offlineClasses.isEmpty) ...[
-                    Center(child: Text("Không có lớp offline")),
                   ],
                 ],
               ),
@@ -267,11 +276,12 @@ class _EnrollPageState extends State<EnrollPage> {
                             level: selectedlevel!,
                             sessions: selectedsessions!,
                             duration: selectedduration!,
+                            instructorName: selectedinstructorName!,
                           ),
                         ),
                       );
                     }
-                  : null,
+                  : null, // Nếu chưa chọn lớp, nút sẽ bị disable
               child: Text('Continue'),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
@@ -319,8 +329,8 @@ class ClassCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
-        width: 350, // Tăng độ rộng để hiển thị đầy đủ tiêu đề
-        height: 210, // Tăng chiều cao thẻ
+        width: 350,
+        height: 230,
         child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),

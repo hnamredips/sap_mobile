@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sap_mobile/screens/home_screen.dart';
 
 class ScheduleScreen extends StatefulWidget {
   @override
@@ -36,6 +37,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, // Xóa mũi tên quay lại
         title: Text(
           'Schedule',
           style: TextStyle(
