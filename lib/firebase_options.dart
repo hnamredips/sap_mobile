@@ -17,29 +17,17 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -57,6 +45,49 @@ class DefaultFirebaseOptions {
     appId: '1:506055875645:android:112561a803efcdffcf5e54',
     messagingSenderId: '506055875645',
     projectId: 'signin-96a21',
-    storageBucket: 'signin-96a21.appspot.com',
+    storageBucket: 'signin-96a21.firebasestorage.app',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyD9XLI0XAiSL5kXn6udePgF9gjj6-o8NaM',
+    appId: '1:506055875645:web:765bde606a649b8dcf5e54',
+    messagingSenderId: '506055875645',
+    projectId: 'signin-96a21',
+    authDomain: 'signin-96a21.firebaseapp.com',
+    storageBucket: 'signin-96a21.firebasestorage.app',
+    measurementId: 'G-B8WNKDXPWN',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyB5Rv0ZSVt1BAo0ur4gtyePCizbMtSt-v0',
+    appId: '1:506055875645:ios:977c7583f53eb991cf5e54',
+    messagingSenderId: '506055875645',
+    projectId: 'signin-96a21',
+    storageBucket: 'signin-96a21.firebasestorage.app',
+    androidClientId: '506055875645-4ovmehckft2lkhanqp2053cn7tjribo4.apps.googleusercontent.com',
+    iosClientId: '506055875645-qti98o8smqsg5e8ehui5fjj9vsnk26tm.apps.googleusercontent.com',
+    iosBundleId: 'com.example.sapMobile',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyB5Rv0ZSVt1BAo0ur4gtyePCizbMtSt-v0',
+    appId: '1:506055875645:ios:977c7583f53eb991cf5e54',
+    messagingSenderId: '506055875645',
+    projectId: 'signin-96a21',
+    storageBucket: 'signin-96a21.firebasestorage.app',
+    androidClientId: '506055875645-4ovmehckft2lkhanqp2053cn7tjribo4.apps.googleusercontent.com',
+    iosClientId: '506055875645-qti98o8smqsg5e8ehui5fjj9vsnk26tm.apps.googleusercontent.com',
+    iosBundleId: 'com.example.sapMobile',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyD9XLI0XAiSL5kXn6udePgF9gjj6-o8NaM',
+    appId: '1:506055875645:web:0d13fe7a17e97d6fcf5e54',
+    messagingSenderId: '506055875645',
+    projectId: 'signin-96a21',
+    authDomain: 'signin-96a21.firebaseapp.com',
+    storageBucket: 'signin-96a21.firebasestorage.app',
+    measurementId: 'G-M4TF7PGZF9',
+  );
+
 }

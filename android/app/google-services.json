@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "506055875645",
     "project_id": "signin-96a21",
-    "storage_bucket": "signin-96a21.appspot.com"
+    "storage_bucket": "signin-96a21.firebasestorage.app"
   },
   "client": [
     {
@@ -19,6 +19,30 @@
           "android_info": {
             "package_name": "com.example.sap_mobile",
             "certificate_hash": "fcf2650f19c74ad88cabe4b346c7c9e0319cb831"
+          }
+        },
+        {
+          "client_id": "506055875645-704975ldkd8n067jqmgkjtv9mkilbo9k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sap_mobile",
+            "certificate_hash": "1eda861e48fff896f502f4093904524b04bb01bd"
+          }
+        },
+        {
+          "client_id": "506055875645-tpaf7njvnn83cel4r6e01r33t6nh6uqa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sap_mobile",
+            "certificate_hash": "abdaf503a736654a9f03043f5d1e92686fa644a9"
+          }
+        },
+        {
+          "client_id": "506055875645-u3kmmbs4gg8srbhqtqgunf0suto7ao1d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sap_mobile",
+            "certificate_hash": "ba1f9aa8738277396486314f8719d6fc61bbf0ff"
           }
         },
         {

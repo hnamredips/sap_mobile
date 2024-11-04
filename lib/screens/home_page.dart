@@ -2,8 +2,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart'; // Thêm DIO để gọi API
 import 'package:sap_mobile/screens/view_all_material.dart';
+import 'package:sap_mobile/screens/schedule_screen.dart';
 import 'package:sap_mobile/screens/search_screen.dart'; // Import SearchScreen
 import 'package:sap_mobile/screens/modulemm.dart'; // Import trang chi tiết module MM, bạn thêm tương tự với PP, SD
+import 'package:shared_preferences/shared_preferences.dart'; // Thêm thư viện để sử dụng SharedPreferences
 
 class HomePage extends StatefulWidget {
   @override
@@ -21,15 +23,21 @@ class _HomePageState extends State<HomePage> {
       {}; // Để lưu courseId với certificateId từ API Get All Course
   Map<int, String> certificateNames =
       {}; // Để lưu certificateId với certificateName từ API Certificate
+  String? currentUserId; // Để lưu trữ currentUserId
+  String? currentUserFullname; // Thêm biến để lưu fullname của người dùng
 
   @override
   void initState() {
     super.initState();
-    _fetchModules(); // Gọi hàm lấy dữ liệu module từ API
-    _fetchTopCertificates(); // Gọi hàm lấy dữ liệu certificate từ API
-    _fetchEnrolledCertificates(); // Gọi hàm lấy dữ liệu Enrolled Certificates từ API
-    _fetchCourses(); // Gọi API Get All Course
-    _fetchCertificates(); // Gọi API Get All Certificates
+    _initializeData(); // Gọi hàm khởi tạo dữ liệu
+  }
+
+  Future<void> _initializeData() async {
+    await _fetchModules(); // Gọi hàm lấy dữ liệu module từ API
+    await _fetchTopCertificates(); // Gọi hàm lấy dữ liệu certificate từ API
+    await _fetchCourses(); // Gọi API Get All Course
+    await _fetchCertificates(); // Gọi API Get All Certificates
+    await _fetchEnrolledCertificates(); // Gọi hàm lấy dữ liệu Enrolled Certificates từ API
   }
 
   // Hàm gọi API và lấy dữ liệu module
@@ -61,6 +69,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  
   // Hàm gọi API và lấy dữ liệu top 3 certificates
   Future<void> _fetchTopCertificates() async {
     try {
@@ -77,7 +86,7 @@ class _HomePageState extends State<HomePage> {
         List<dynamic> filteredCertificates = data
             .where((certificate) =>
                 certificate['certificateName'].length >= 15 &&
-                certificate['certificateName'].length < 50)
+                certificate['certificateName'].length < 27)
             .toList();
 
         // Sắp xếp danh sách theo độ dài certificateName
@@ -159,119 +168,124 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Hàm hiển thị Enrolled Certificates
   Future<void> _fetchEnrolledCertificates() async {
-    try {
-      print('Fetching enrolled certificates...');
+  try {
+    print('Fetching enrolled certificates...');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? currentEmail = prefs.getString('currentEmail');
 
-      // Bước 1: Lấy danh sách người dùng và tìm userId hiện tại
-      var userResponse = await Dio().get(
-        'https://swdsapelearningapi.azurewebsites.net/api/User/api/users',
-      );
+    if (currentEmail == null) {
+      print('Không tìm thấy email đăng nhập. Vui lòng đăng nhập lại.');
+      setState(() {
+        isLoadingEnrolled = false;
+      });
+      return;
+    }
 
-      if (userResponse.statusCode == 200) {
-        var userData = userResponse.data;
+    var userResponse = await Dio().get(
+      'https://swdsapelearningapi.azurewebsites.net/api/User/get-all-student',
+    );
 
-        // In toàn bộ userData để kiểm tra cấu trúc
-        print('User Data: $userData');
+    if (userResponse.statusCode == 200) {
+      var userData = userResponse.data;
 
-        // Tìm userId "S71990" từ danh sách người dùng trong "$values"
-        String? currentUserId;
-        if (userData.containsKey('\$values')) {
-          for (var user in userData['\$values']) {
-            if (user['id'] == 'S71990') {
-              currentUserId = user['id'];
-              break;
-            }
+      if (userData.containsKey('\$values')) {
+        for (var user in userData['\$values']) {
+          if (user['email'] == currentEmail) {
+            currentUserId = user['id'];
+            currentUserFullname = user['fullname'];
+            await prefs.setString('currentUserId', currentUserId!);
+            print('UserID: $currentUserId'); // In ra UserID vào console
+            setState(() {
+              currentUserFullname = user['fullname'];
+            });
+            break;
           }
         }
+      }
 
-        // Kiểm tra nếu tìm thấy userId
-        if (currentUserId != null) {
-          print('Current User ID: $currentUserId'); // Kiểm tra giá trị userId
+      if (currentUserId == null) {
+        print("User ID not found in user data.");
+        setState(() {
+          isLoadingEnrolled = false;
+        });
+        return;
+      }
 
-          // Bước 2: Gọi API Enrollment để lấy danh sách đăng ký
-          var enrollmentResponse = await Dio().get(
-            'https://swdsapelearningapi.azurewebsites.net/api/Enrollment/get-all',
-          );
+      var enrollmentResponse = await Dio().get(
+        'https://swdsapelearningapi.azurewebsites.net/api/Enrollment/get-all',
+      );
 
-          if (enrollmentResponse.statusCode == 200) {
-            var enrollmentsData = enrollmentResponse.data['\$values'];
+      if (enrollmentResponse.statusCode == 200) {
+        var enrollmentsData = enrollmentResponse.data['\$values'];
+        var confirmedEnrollments = enrollmentsData.where((enrollment) {
+          return enrollment['userId'] == currentUserId &&
+              enrollment['status'] == 'Success';
+        }).toList();
 
-            // Lọc danh sách enrollments theo userId hiện tại và status là "Confirmed"
-            var confirmedEnrollments = enrollmentsData.where((enrollment) {
-              return enrollment['userId'] == currentUserId &&
-                  enrollment['status'] == 'Confirmed';
-            }).toList();
+        var courseResponse = await Dio().get(
+          'https://swdsapelearningapi.azurewebsites.net/api/Course/get-all',
+        );
 
-            // Bước 3: Kết hợp courseId với certificateName thông qua certificateId
-            List<Map<String, dynamic>> enrolledCerts = [];
-            for (var enrollment in confirmedEnrollments) {
-              int courseId = enrollment['courseId'];
+        if (courseResponse.statusCode == 200 &&
+            courseResponse.data.containsKey('\$values')) {
+          var courseData = courseResponse.data['\$values'];
+          Map<int, String> courseMap = {
+            for (var course in courseData) course['id']: course['courseName']
+          };
 
-              // Kiểm tra courseId có trong courseNames
-              if (courseNames.containsKey(courseId)) {
-                int certificateId = courseNames[courseId]!;
-                String certificateName =
-                    certificateNames[certificateId] ?? 'Unknown Certificate';
-
-                enrolledCerts.add({
-                  'courseId': courseId,
-                  'certificateName': certificateName,
-                  'status': enrollment['status'],
-                });
-              } else {
-                print('Course ID $courseId không tìm thấy trong courseNames.');
-              }
-            }
-
-            // Cập nhật enrolledCertificates và tắt loading
-            setState(() {
-              enrolledCertificates = enrolledCerts;
-              isLoadingEnrolled = false;
-            });
-          } else {
-            print("Error fetching enrollments data.");
-            setState(() {
-              isLoadingEnrolled = false; // Tắt loading nếu gặp lỗi
-            });
-          }
-        } else {
-          print("User ID 'S71990' not found in user data.");
           setState(() {
-            isLoadingEnrolled = false; // Tắt loading nếu không tìm thấy userId
+  enrolledCertificates = confirmedEnrollments.map((enrollment) {
+    final courseId = enrollment['courseId'];
+    final courseName = courseMap[courseId] ?? 'Unknown Course';
+    final certificateName = certificateNames[courseNames[courseId]] ?? courseName;
+
+    return {
+      'courseName': courseName,
+      'certificateName': certificateName,
+    };
+  }).toList();
+  isLoadingEnrolled = false;
+});
+
+        } else {
+          print("Error fetching courses data.");
+          setState(() {
+            isLoadingEnrolled = false;
           });
         }
       } else {
-        print("Error fetching user data.");
+        print("Error fetching enrollments data.");
         setState(() {
-          isLoadingEnrolled = false; // Tắt loading nếu gặp lỗi
+          isLoadingEnrolled = false;
         });
       }
-    } catch (e) {
-      print('Error fetching enrolled certificates: $e');
+    } else {
+      print("Error fetching user data.");
       setState(() {
-        isLoadingEnrolled = false; // Tắt loading nếu gặp lỗi
+        isLoadingEnrolled = false;
       });
     }
+  } catch (e) {
+    print('Error fetching enrolled certificates: $e');
+    setState(() {
+      isLoadingEnrolled = false;
+    });
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Hi, Đạt"),
+        automaticallyImplyLeading: false, // Xóa mũi tên quay lại
+        title: Text("Hi, ${currentUserFullname ?? ''}"),
         actions: [
           IconButton(
             icon: Icon(Icons.notifications),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        ModuleMM()),
-              );
-            },
+            onPressed: () {},
           ),
           IconButton(
             icon: Icon(Icons.search),
@@ -306,16 +320,18 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     // Schedule Header
                     Container(
-                      padding: EdgeInsets.all(12),
+                      padding: EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Study schedule',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text('Tất cả', style: TextStyle(color: Colors.blue)),
+                          Text(
+                            'Study schedule',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
                         ],
                       ),
                     ),
@@ -533,7 +549,6 @@ class _HomePageState extends State<HomePage> {
             children: [
               Text('Subject Code: $subjectCode'),
               Text('Room: $room'),
-              Text('Giờ học: $time'),
             ],
           ),
           Row(
