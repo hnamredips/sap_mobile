@@ -220,7 +220,7 @@ class _HomePageState extends State<HomePage> {
         var enrollmentsData = enrollmentResponse.data['\$values'];
         var confirmedEnrollments = enrollmentsData.where((enrollment) {
           return enrollment['userId'] == currentUserId &&
-              enrollment['status'] == 'Confirmed';
+              enrollment['status'] == 'Success';
         }).toList();
 
         var courseResponse = await Dio().get(
@@ -235,14 +235,19 @@ class _HomePageState extends State<HomePage> {
           };
 
           setState(() {
-            enrolledCertificates = confirmedEnrollments.map((enrollment) {
-              return {
-                'courseName': courseMap[enrollment['courseId']] ?? 'Unknown Course',
-                'certificateName': certificateNames[courseNames[enrollment['courseId']]] ?? 'Unknown Certificate',
-              };
-            }).toList();
-            isLoadingEnrolled = false;
-          });
+  enrolledCertificates = confirmedEnrollments.map((enrollment) {
+    final courseId = enrollment['courseId'];
+    final courseName = courseMap[courseId] ?? 'Unknown Course';
+    final certificateName = certificateNames[courseNames[courseId]] ?? courseName;
+
+    return {
+      'courseName': courseName,
+      'certificateName': certificateName,
+    };
+  }).toList();
+  isLoadingEnrolled = false;
+});
+
         } else {
           print("Error fetching courses data.");
           setState(() {

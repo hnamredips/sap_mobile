@@ -58,7 +58,7 @@ Future<void> _signUpWithGoogle(BuildContext context) async {
 
     // Gọi API với header Authorization chứa ID Token
     var response = await dio.post(
-      'https://swdsapelearningapi.azurewebsites.net/api/User/login-by-google',
+      'https://swdsapelearningapi.azurewebsites.net/api/User/Register-by-google',
       data: '"$idToken"', // Bao quanh idToken bằng dấu ngoặc kép
     );
 

@@ -4,6 +4,10 @@ import 'package:sap_mobile/screens/view_all_material.dart';
 import 'schedule_screen.dart';
 import 'profile_screen.dart';
 class HomeScreen extends StatefulWidget {
+  final int initialIndex;
+
+  const HomeScreen({Key? key, this.initialIndex = 0}) : super(key: key);
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -11,12 +15,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  // Danh sach cac man hinh lien quan den tung muc trong Bottom Nagigation Bar
   static final List<Widget> _widgetOptions = <Widget>[
     HomePage(),
     ScheduleScreen(),
-    ProfileScreen()
+    ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Set _selectedIndex to initialIndex when HomeScreen is first built
+    _selectedIndex = widget.initialIndex;
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -25,35 +35,33 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Padding(
-      padding: const EdgeInsets.only(top: 15.0), // Điều chỉnh khoảng cách thụt xuống tại đây
-      child: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.only(top: 15.0),
+        child: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
       ),
-    ),
-    bottomNavigationBar: BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Homepage',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.schedule),
-          label: 'Schedule',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
-        ),
-      ],
-      currentIndex: _selectedIndex,
-      selectedItemColor: Colors.blue,
-      onTap: _onItemTapped,
-    ),
-  );
-}
-
-
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Homepage',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.schedule),
+            label: 'Schedule',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        onTap: _onItemTapped,
+      ),
+    );
+  }
 }

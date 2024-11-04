@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // Gọi API với header Authorization chứa ID Token
         var response = await _dio.post(
-          'https://swdsapelearningapi.azurewebsites.net/api/User/login-by-google',
+          'https://swdsapelearningapi.azurewebsites.net/api/User/Login-by-google',
           data: '"$idToken"', // Bao quanh idToken bằng dấu ngoặc kép
         );
 
