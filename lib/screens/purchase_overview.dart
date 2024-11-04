@@ -1,6 +1,9 @@
 // import 'package:flutter/material.dart';
 // import 'package:dio/dio.dart';
 // import 'package:sap_mobile/screens/moduleMM.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:webview_flutter/webview_flutter.dart';
+// import 'package:url_launcher/url_launcher.dart';
 
 // class CombinedPurchasePage extends StatefulWidget {
 //   final String className;
@@ -13,6 +16,7 @@
 //   final String sessions;
 //   final String duration;
 //   final String instructorName;
+//   final int courseId;
 
 //   const CombinedPurchasePage({
 //     Key? key,
@@ -26,6 +30,7 @@
 //     required this.sessions,
 //     required this.duration,
 //     required this.instructorName,
+//     required this.courseId,
 //   }) : super(key: key);
 
 //   @override
@@ -36,65 +41,200 @@
 //   int _currentStep = 0;
 //   PageController _pageController = PageController();
 //   String _selectedPaymentMethod = 'Mastercard';
-//   String? certificateLevel; // Biến để lưu trữ level của chứng chỉ
+//   String? certificateLevel;
+//   String? paymentUrl;
+//   String? enrollmentId;
+//   String? paymentId;
+//   String? currentUserId;
+//   int? courseId;
 
 //   @override
 //   void initState() {
 //     super.initState();
+//     _loadUserId();
 //     fetchCertificateLevel();
+//     fetchCourseId();
+//   }
+
+//   Future<void> _loadUserId() async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     setState(() {
+//       currentUserId = prefs.getString('currentUserId');
+//     });
 //   }
 
 //   Future<void> fetchCertificateLevel() async {
-//   try {
-//     final response = await Dio().get('https://swdsapelearningapi.azurewebsites.net/api/Certificate/get-all');
+//     try {
+//       final response = await Dio().get('https://swdsapelearningapi.azurewebsites.net/api/Certificate/get-all');
 
-//     if (response.statusCode == 200) {
-//       print("API call successful. Response data:");
-//       print(response.data); // In ra toàn bộ dữ liệu nhận được từ API
+//       if (response.statusCode == 200) {
+//         final data = response.data;
+//         if (data is Map<String, dynamic> && data.containsKey('\$values')) {
+//           final certificates = data['\$values'] as List<dynamic>;
 
-//       // Kiểm tra nếu response là Map và chứa '$values'
-//       final data = response.data;
-//       if (data is Map<String, dynamic> && data.containsKey('\$values')) {
-//         final certificates = data['\$values'] as List<dynamic>;
-        
-//         print("Extracted certificates list:");
-//         print(certificates); // In ra danh sách chứng chỉ
+//           final certificate = certificates.firstWhere(
+//             (cert) => cert['certificateName'] == widget.iddcertificate,
+//             orElse: () => null,
+//           );
 
-//         // Tìm chứng chỉ phù hợp dựa trên tên
-//         final certificate = certificates.firstWhere(
-//           (cert) => cert['certificateName'] == widget.iddcertificate,
-//           orElse: () => null,
-//         );
-
-//         if (certificate != null) {
-//           print("Matching certificate found:");
-//           print(certificate); // In ra chứng chỉ tìm thấy
-
-//           setState(() {
-//             certificateLevel = certificate['level'] ?? 'Không có thông tin';
-//           });
+//           if (certificate != null) {
+//             setState(() {
+//               certificateLevel = certificate['level'] ?? 'Không có thông tin';
+//             });
+//           } else {
+//             setState(() {
+//               certificateLevel = 'Không tìm thấy thông tin';
+//             });
+//           }
 //         } else {
-//           print("No certificate found matching name: ${widget.iddcertificate}");
 //           setState(() {
-//             certificateLevel = 'Không tìm thấy thông tin';
+//             certificateLevel = 'Dữ liệu không hợp lệ';
 //           });
 //         }
 //       } else {
-//         print("Unexpected data format: 'values' field not found or response is not a Map");
-//         setState(() {
-//           certificateLevel = 'Dữ liệu không hợp lệ';
-//         });
+//         throw Exception('Failed to load certificate data');
 //       }
+//     } catch (e) {
+//       setState(() {
+//         certificateLevel = 'Lỗi khi lấy dữ liệu';
+//       });
+//     }
+//   }
+
+//   Future<void> fetchCourseId() async {
+//     try {
+//       final response = await Dio().get('https://swdsapelearningapi.azurewebsites.net/api/Course/get-all');
+
+//       if (response.statusCode == 200) {
+//         final data = response.data;
+//         if (data is Map<String, dynamic> && data.containsKey('\$values')) {
+//           final courses = data['\$values'] as List<dynamic>;
+
+//           final course = courses.firstWhere(
+//             (c) => c['certificateName'] == widget.iddcertificate,
+//             orElse: () => null,
+//           );
+
+//           if (course != null) {
+//             setState(() {
+//               courseId = course['id'];
+//             });
+//             print("Fetched courseId: $courseId for certificate: ${widget.iddcertificate}");
+//           } else {
+//             setState(() {
+//               courseId = null;
+//             });
+//             print("No course found for certificate: ${widget.iddcertificate}");
+//           }
+//         } else {
+//           print("Unexpected data format from Course API");
+//         }
+//       } else {
+//         throw Exception('Failed to load course data');
+//       }
+//     } catch (e) {
+//       print('Error fetching courseId: $e');
+//     }
+//   }
+
+//   Future<void> createEnrollment() async {
+//   try {
+//     final enrollmentPrice = int.tryParse(widget.price.replaceAll(',', '')) ?? -1;
+//     if (enrollmentPrice == -1 || currentUserId == null || widget.courseId == null) {
+//       print("Error: Missing userId, courseId, or price cannot be converted.");
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(
+//           content: Text('Đăng ký không thành công. Vui lòng kiểm tra thông tin.'),
+//         ),
+//       );
+//       return;
+//     }
+
+//     final requestData = {
+//       "userId": currentUserId,
+//       "courseId": widget.courseId,
+//       "enrollmentPrice": enrollmentPrice,
+//     };
+
+//     print("Sending enrollment request with data: $requestData");
+
+//     final response = await Dio().post(
+//       'https://swdsapelearningapi.azurewebsites.net/api/Enrollment/create',
+//       data: requestData,
+//     );
+
+//     if (response.statusCode == 201) {
+//       enrollmentId = response.data['id'].toString();
+//       print("Enrollment created successfully with ID: $enrollmentId");
+
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(
+//           content: Text('Đăng ký khóa học ${widget.className} thành công.'),
+//         ),
+//       );
+
+//       await createPayment(enrollmentId!);
 //     } else {
-//       throw Exception('Failed to load certificate data');
+//       throw Exception('Failed to create enrollment');
 //     }
 //   } catch (e) {
-//     print('Error fetching certificate level: $e');
-//     setState(() {
-//       certificateLevel = 'Lỗi khi lấy dữ liệu';
-//     });
+//     print('Error creating enrollment: $e');
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Text('Đăng ký không thành công. Vui lòng thử lại.'),
+//       ),
+//     );
 //   }
 // }
+
+//   Future<void> createPayment(String enrollmentId) async {
+//     try {
+//       print("Creating payment for enrollmentId: $enrollmentId");
+//       final response = await Dio().post(
+//         'https://swdsapelearningapi.azurewebsites.net/api/Payment/create?enrollmentId=$enrollmentId',
+//       );
+
+//       if (response.statusCode == 200) {
+//         paymentId = response.data['id'].toString();
+//         print("Payment created successfully with ID: $paymentId");
+
+//         setState(() {
+//           _currentStep = 1;
+//           _pageController.jumpToPage(1);
+//         });
+//       } else {
+//         throw Exception('Failed to create payment');
+//       }
+//     } catch (e) {
+//       print('Error creating payment: $e');
+//     }
+//   }
+
+//   Future<void> createVnpayUrl(String paymentId) async {
+//     try {
+//       print("Creating VNPAY URL for paymentId: $paymentId");
+//       final response = await Dio().get(
+//         'https://swdsapelearningapi.azurewebsites.net/api/VNPay/CreatePaymentUrl?PaymentId=$paymentId',
+//       );
+
+//       if (response.statusCode == 200) {
+//         setState(() {
+//           paymentUrl = response.data;
+//         });
+//         print("VNPAY URL created successfully: $paymentUrl");
+
+//         if (await canLaunch(paymentUrl!)) {
+//           await launch(paymentUrl!, forceSafariVC: false, forceWebView: false);
+//         } else {
+//           throw 'Could not launch $paymentUrl';
+//         }
+//       } else {
+//         throw Exception('Failed to create VNPAY URL');
+//       }
+//     } catch (e) {
+//       print('Error creating VNPAY URL: $e');
+//     }
+//   }
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -145,20 +285,24 @@
 //             left: 16,
 //             right: 16,
 //             child: ElevatedButton(
-//               onPressed: () {
-//                 if (_currentStep == 1) {
-//                   _pageController.jumpToPage(2);
-//                 } else {
-//                   _pageController.nextPage(
-//                     duration: Duration(milliseconds: 300),
-//                     curve: Curves.ease,
-//                   );
-//                 }
-//               },
+//               onPressed: (_currentStep == 1 && _selectedPaymentMethod != 'VNPAY')
+//                   ? null
+//                   : () async {
+//                       if (_currentStep == 0) {
+//                         await createEnrollment();
+//                       } else if (_currentStep == 1) {
+//                         setState(() {
+//                           _currentStep = 2;
+//                           _pageController.jumpToPage(2);
+//                         });
+//                       }
+//                     },
 //               child: Text('CONTINUE', style: TextStyle(fontSize: 18)),
 //               style: ElevatedButton.styleFrom(
 //                 minimumSize: Size(double.infinity, 50),
-//                 backgroundColor: Color(0xFF275998),
+//                 backgroundColor: (_currentStep == 1 && _selectedPaymentMethod != 'VNPAY')
+//                     ? Colors.grey
+//                     : Color(0xFF275998),
 //                 foregroundColor: Colors.white,
 //               ),
 //             ),
@@ -223,20 +367,13 @@
 //                 child: Column(
 //                   crossAxisAlignment: CrossAxisAlignment.start,
 //                   children: [
-//                     Text('Certificate Detail',
-//                         style: TextStyle(
-//                             fontSize: 20, fontWeight: FontWeight.bold)),
-//                     SizedBox(height: 10),
 //                     buildDetailRow(
-//                       'Tên chứng chỉ',
+//                       'Certificate',
 //                       widget.iddcertificate.length > 20
 //                           ? '${widget.iddcertificate.substring(0, 20)}...'
 //                           : widget.iddcertificate,
 //                     ),
-//                     buildDetailRow(
-//                       'Cấp độ',
-//                       certificateLevel ?? 'Đang tải...',
-//                     ),
+//                     buildDetailRow('Level ', certificateLevel ?? 'Loading...'),
 //                   ],
 //                 ),
 //               ),
@@ -250,19 +387,15 @@
 //                 child: Column(
 //                   crossAxisAlignment: CrossAxisAlignment.start,
 //                   children: [
-//                     Text('Class Detail',
-//                         style: TextStyle(
-//                             fontSize: 20, fontWeight: FontWeight.bold)),
-//                     SizedBox(height: 10),
 //                     buildDetailRow(
-//                       'Mã lớp',
+//                       'Class code',
 //                       widget.className.length > 20
 //                           ? '${widget.className.substring(0, 20)}...'
 //                           : widget.className,
 //                     ),
-//                     buildDetailRow('Giáo viên', widget.instructorName),
-//                     buildDetailRow('Địa điểm học', widget.location),
-//                     buildDetailRow('Chi phí', widget.price),
+//                     buildDetailRow('Lecturer', widget.instructorName),
+//                     buildDetailRow('Location', widget.location),
+//                     buildDetailRow('Price', widget.price),
 //                   ],
 //                 ),
 //               ),
@@ -299,10 +432,15 @@
 //               context,
 //               label: 'VNPAY',
 //               selectedValue: _selectedPaymentMethod,
-//               onSelect: () {
+//               onSelect: () async {
 //                 setState(() {
 //                   _selectedPaymentMethod = 'VNPAY';
 //                 });
+//                 if (paymentId != null) {
+//                   await createVnpayUrl(paymentId!);
+//                 } else {
+//                   print("VNPAY URL chưa được tạo hoặc không chọn đúng phương thức thanh toán");
+//                 }
 //               },
 //             ),
 //           ],
@@ -316,18 +454,56 @@
 //       child: Column(
 //         mainAxisAlignment: MainAxisAlignment.center,
 //         children: [
-//           Image.asset(
-//             'assets/images/done.png',
-//             height: 200,
-//           ),
-//           SizedBox(height: 20),
-//           Text(
-//             'Successful purchase!',
-//             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+//           ElevatedButton(
+//             onPressed: () async {
+//               await checkEnrollmentStatus();
+//             },
+//             child: Text('Check Enrollment Status'),
 //           ),
 //         ],
 //       ),
 //     );
+//   }
+
+//   Future<void> checkEnrollmentStatus() async {
+//     try {
+//       final response = await Dio().get(
+//         'https://swdsapelearningapi.azurewebsites.net/api/Enrollment/get-all?PageSize=50',
+//       );
+
+//       if (response.statusCode == 200) {
+//         final data = response.data;
+
+//         if (data is Map<String, dynamic> && data.containsKey('\$values')) {
+//           final enrollments = data['\$values'] as List<dynamic>;
+
+//           final enrollment = enrollments.firstWhere(
+//             (enroll) => enroll['id'].toString() == enrollmentId,
+//             orElse: () => null,
+//           );
+
+//           if (enrollment != null && enrollment['status'] == 'Success') {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(
+//                 content: Text('Khóa học ${widget.className} đã được thanh toán thành công'),
+//               ),
+//             );
+//           } else {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(
+//                 content: Text('Khóa học ${widget.className} chưa thanh toán'),
+//               ),
+//             );
+//           }
+//         } else {
+//           print("Unexpected data format from Enrollment API");
+//         }
+//       } else {
+//         throw Exception('Failed to load enrollment data');
+//       }
+//     } catch (e) {
+//       print('Error checking enrollment status: $e');
+//     }
 //   }
 
 //   Widget _buildPaymentOption(
@@ -355,14 +531,41 @@
 //   }
 // }
 
+// class PaymentWebView extends StatelessWidget {
+//   final String url;
 
+//   const PaymentWebView({Key? key, required this.url}) : super(key: key);
 
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('VNPAY Payment'),
+//       ),
+//       body: Center(
+//         child: ElevatedButton(
+//           onPressed: () async {
+//             if (await canLaunch(url)) {
+//               await launch(url, forceSafariVC: false, forceWebView: false);
+//             } else {
+//               throw 'Could not launch $url';
+//             }
+//           },
+//           child: Text('Open in Browser'),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
+import 'package:sap_mobile/screens/home_screen.dart';
+import 'package:sap_mobile/screens/schedule_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:sap_mobile/screens/moduleMM.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CombinedPurchasePage extends StatefulWidget {
   final String className;
@@ -375,6 +578,7 @@ class CombinedPurchasePage extends StatefulWidget {
   final String sessions;
   final String duration;
   final String instructorName;
+  final int courseId;
 
   const CombinedPurchasePage({
     Key? key,
@@ -388,6 +592,7 @@ class CombinedPurchasePage extends StatefulWidget {
     required this.sessions,
     required this.duration,
     required this.instructorName,
+    required this.courseId,
   }) : super(key: key);
 
   @override
@@ -422,7 +627,8 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
 
   Future<void> fetchCertificateLevel() async {
     try {
-      final response = await Dio().get('https://swdsapelearningapi.azurewebsites.net/api/Certificate/get-all');
+      final response = await Dio().get(
+          'https://swdsapelearningapi.azurewebsites.net/api/Certificate/get-all');
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -460,7 +666,8 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
 
   Future<void> fetchCourseId() async {
     try {
-      final response = await Dio().get('https://swdsapelearningapi.azurewebsites.net/api/Course/get-all');
+      final response = await Dio().get(
+          'https://swdsapelearningapi.azurewebsites.net/api/Course/get-all');
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -476,8 +683,12 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
             setState(() {
               courseId = course['id'];
             });
-            print("Fetched courseId: $courseId for certificate: ${widget.iddcertificate}");
+            print(
+                "Fetched courseId: $courseId for certificate: ${widget.iddcertificate}");
           } else {
+            setState(() {
+              courseId = null;
+            });
             print("No course found for certificate: ${widget.iddcertificate}");
           }
         } else {
@@ -493,15 +704,24 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
 
   Future<void> createEnrollment() async {
     try {
-      final enrollmentPrice = int.tryParse(widget.price.replaceAll(',', '')) ?? -1;
-      if (enrollmentPrice == -1 || currentUserId == null || courseId == null) {
+      final enrollmentPrice =
+          int.tryParse(widget.price.replaceAll(',', '')) ?? -1;
+      if (enrollmentPrice == -1 ||
+          currentUserId == null ||
+          widget.courseId == null) {
         print("Error: Missing userId, courseId, or price cannot be converted.");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Đăng ký không thành công. Vui lòng kiểm tra thông tin.'),
+          ),
+        );
         return;
       }
 
       final requestData = {
         "userId": currentUserId,
-        "courseId": courseId,
+        "courseId": widget.courseId,
         "enrollmentPrice": enrollmentPrice,
       };
 
@@ -516,12 +736,23 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
         enrollmentId = response.data['id'].toString();
         print("Enrollment created successfully with ID: $enrollmentId");
 
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Đăng ký khóa học ${widget.className} thành công.'),
+          ),
+        );
+
         await createPayment(enrollmentId!);
       } else {
         throw Exception('Failed to create enrollment');
       }
     } catch (e) {
       print('Error creating enrollment: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Đăng ký không thành công. Vui lòng thử lại.'),
+        ),
+      );
     }
   }
 
@@ -536,7 +767,6 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
         paymentId = response.data['id'].toString();
         print("Payment created successfully with ID: $paymentId");
 
-        // Tự động chuyển sang trang Payment Method sau khi tạo Payment
         setState(() {
           _currentStep = 1;
           _pageController.jumpToPage(1);
@@ -562,18 +792,63 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
         });
         print("VNPAY URL created successfully: $paymentUrl");
 
-        // Chuyển tiếp đến trang thanh toán khi URL đã được tạo
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PaymentWebView(url: paymentUrl!),
-          ),
-        );
+        if (await canLaunch(paymentUrl!)) {
+          await launch(paymentUrl!, forceSafariVC: false, forceWebView: false);
+        } else {
+          throw 'Could not launch $paymentUrl';
+        }
       } else {
         throw Exception('Failed to create VNPAY URL');
       }
     } catch (e) {
       print('Error creating VNPAY URL: $e');
+    }
+  }
+
+  Future<void> checkAndNavigate() async {
+    try {
+      final response = await Dio().get(
+        'https://swdsapelearningapi.azurewebsites.net/api/Enrollment/get-all?PageSize=50',
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+
+        if (data is Map<String, dynamic> && data.containsKey('\$values')) {
+          final enrollments = data['\$values'] as List<dynamic>;
+
+          final enrollment = enrollments.firstWhere(
+            (enroll) => enroll['id'].toString() == enrollmentId,
+            orElse: () => null,
+          );
+
+          if (enrollment != null && enrollment['status'] == 'Success') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'Khóa học ${widget.className} đã được thanh toán thành công'),
+              ),
+            );
+            await Future.delayed(Duration(seconds: 2));
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                  builder: (context) => HomeScreen(initialIndex: 1)),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Khóa học ${widget.className} chưa thanh toán'),
+              ),
+            );
+          }
+        } else {
+          print("Unexpected data format from Enrollment API");
+        }
+      } else {
+        throw Exception('Failed to load enrollment data');
+      }
+    } catch (e) {
+      print('Error checking enrollment status: $e');
     }
   }
 
@@ -600,7 +875,6 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
                   children: [
                     stepIndicator('Overview', 0),
                     stepIndicator('Payment Method', 1),
-                    stepIndicator('Confirmation', 2),
                   ],
                 ),
               ),
@@ -615,7 +889,6 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
                   children: [
                     buildOverviewPage(),
                     buildPaymentMethodPage(),
-                    buildConfirmationPage(),
                   ],
                 ),
               ),
@@ -626,21 +899,23 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
             left: 16,
             right: 16,
             child: ElevatedButton(
-              onPressed: () async {
-                if (_currentStep == 0) {
-                  await createEnrollment();
-                } else if (_currentStep == 1) {
-                  if (_selectedPaymentMethod == 'VNPAY' && paymentId != null) {
-                    await createVnpayUrl(paymentId!);
-                  } else {
-                    print("VNPAY URL chưa được tạo hoặc không chọn đúng phương thức thanh toán");
-                  }
-                }
-              },
+              onPressed:
+                  (_currentStep == 1 && _selectedPaymentMethod != 'VNPAY')
+                      ? null
+                      : () async {
+                          if (_currentStep == 0) {
+                            await createEnrollment();
+                          } else if (_currentStep == 1) {
+                            await checkAndNavigate();
+                          }
+                        },
               child: Text('CONTINUE', style: TextStyle(fontSize: 18)),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
-                backgroundColor: Color(0xFF275998),
+                backgroundColor:
+                    (_currentStep == 1 && _selectedPaymentMethod != 'VNPAY')
+                        ? Colors.grey
+                        : Color(0xFF275998),
                 foregroundColor: Colors.white,
               ),
             ),
@@ -705,8 +980,13 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildDetailRow('Tên chứng chỉ', widget.iddcertificate),
-                    buildDetailRow('Cấp độ', certificateLevel ?? 'Đang tải...'),
+                    buildDetailRow(
+                      'Certificate',
+                      widget.iddcertificate.length > 20
+                          ? '${widget.iddcertificate.substring(0, 20)}...'
+                          : widget.iddcertificate,
+                    ),
+                    buildDetailRow('Level ', certificateLevel ?? 'Loading...'),
                   ],
                 ),
               ),
@@ -721,14 +1001,14 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     buildDetailRow(
-                      'Mã lớp',
+                      'Class code',
                       widget.className.length > 20
                           ? '${widget.className.substring(0, 20)}...'
                           : widget.className,
                     ),
-                    buildDetailRow('Giáo viên', widget.instructorName),
-                    buildDetailRow('Địa điểm học', widget.location),
-                    buildDetailRow('Chi phí', widget.price),
+                    buildDetailRow('Lecturer', widget.instructorName),
+                    buildDetailRow('Location', widget.location),
+                    buildDetailRow('Price', widget.price),
                   ],
                 ),
               ),
@@ -765,33 +1045,20 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
               context,
               label: 'VNPAY',
               selectedValue: _selectedPaymentMethod,
-              onSelect: () {
+              onSelect: () async {
                 setState(() {
                   _selectedPaymentMethod = 'VNPAY';
                 });
+                if (paymentId != null) {
+                  await createVnpayUrl(paymentId!);
+                } else {
+                  print(
+                      "VNPAY URL chưa được tạo hoặc không chọn đúng phương thức thanh toán");
+                }
               },
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget buildConfirmationPage() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            'assets/images/done.png',
-            height: 200,
-          ),
-          SizedBox(height: 20),
-          Text(
-            'Successful purchase!',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ],
       ),
     );
   }
@@ -821,7 +1088,6 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
   }
 }
 
-// Định nghĩa trang WebView cho VNPAY
 class PaymentWebView extends StatelessWidget {
   final String url;
 
@@ -831,10 +1097,19 @@ class PaymentWebView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('VNPAY Payment'),
+        title: const Text('VNPAY Payment'),
       ),
       body: Center(
-        child: Text('$url'),
+        child: ElevatedButton(
+          onPressed: () async {
+            if (await canLaunch(url)) {
+              await launch(url, forceSafariVC: false, forceWebView: false);
+            } else {
+              throw 'Could not launch $url';
+            }
+          },
+          child: Text('Open in Browser'),
+        ),
       ),
     );
   }
