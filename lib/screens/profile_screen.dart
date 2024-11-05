@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:sap_mobile/main.dart';
-import 'package:sap_mobile/screens/payment.dart';
 import 'edit_profile_screen.dart';
 import 'login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Thêm thư viện để sử dụng SharedPreferences

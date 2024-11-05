@@ -10,62 +10,66 @@ class _QuizPageState extends State<Quiz> {
   int currentQuestionIndex = 0;
   List<Question> questions = [
     Question(
-        "SAP S/4HANA Materials Management cho phép tích hợp đầy đủ với các module khác như SD và PP.",
-        true),
-    Question(
-        "Trong SAP S/4HANA, bảng 'EKKO' chứa thông tin chi tiết về chứng từ mua hàng.",
-        true),
-    Question(
-        "Công cụ MRP (Material Requirement Planning) không thể sử dụng trong module SAP MM.",
-        false),
-    Question(
-        "Trong quy trình SAP MM, hóa đơn hàng mua (Invoice) luôn được ghi nhận trước khi thực hiện kiểm tra hàng hóa (Goods Receipt).",
-        false),
-    Question(
-        "SAP MM cho phép quản lý cả hàng tồn kho trong kho thực tế và kho ảo.",
-        true),
-    Question(
-        "Mọi dữ liệu chính (Master Data) trong SAP MM đều được lưu trữ trong bảng MARA.",
-        true),
-    Question(
-        "SAP S/4HANA MM chỉ hỗ trợ các hoạt động mua bán cho doanh nghiệp nhỏ và vừa.",
-        false),
-    Question(
-        "Đơn hàng mua (Purchase Order) trong SAP MM có thể được tạo mà không cần sử dụng yêu cầu mua hàng (Purchase Requisition).",
-        true),
-    Question(
-        "Điều chỉnh hàng tồn kho trong SAP MM được thực hiện bằng cách sử dụng các giao dịch như MB1A và MB1B.",
-        true),
-    Question(
-        "Các phiên bản SAP S/4HANA không còn hỗ trợ các báo cáo tài chính dựa trên mô-đun MM.",
-        false),
-    Question(
-        "Quy trình kiểm tra chất lượng (Quality Inspection) không thể được tích hợp trong quy trình nhận hàng (Goods Receipt) của SAP MM.",
-        false),
-    Question(
-        "SAP MM hỗ trợ cả quy trình mua hàng trong nước và quốc tế.", true),
-    Question(
-        "Các yêu cầu mua hàng trong SAP MM không thể tự động chuyển đổi thành đơn hàng mua.",
-        false),
-    Question(
-        "SAP MM cho phép tích hợp với SAP Ariba để tối ưu hóa quy trình mua sắm.",
-        true),
-    Question("SAP MM không hỗ trợ quy trình quản lý hợp đồng mua bán dài hạn.",
-        false),
-    Question(
-        "Quy trình đặt hàng gián tiếp (Indirect Procurement) không thể được quản lý trong SAP MM.",
-        false),
-    Question(
-        "SAP MM cho phép tạo báo cáo tùy chỉnh thông qua các công cụ như SAP Query và SAP Fiori.",
-        true),
-    Question(
-        "Trong SAP MM, việc theo dõi hàng hóa trong quá trình vận chuyển không được hỗ trợ.",
-        false),
-    Question(
-        "SAP MM cho phép phân loại nhà cung cấp dựa trên hiệu suất của họ.",
-        true),
-    Question(
-        "SAP MM hỗ trợ việc quản lý các hợp đồng cung cấp theo lịch.", true),
+    "SAP S/4HANA Materials Management allows full integration with other modules such as SD and PP.",
+    true),
+Question(
+    "In SAP S/4HANA, the 'EKKO' table contains detailed information about purchasing documents.",
+    true),
+Question(
+    "The MRP (Material Requirement Planning) tool cannot be used in the SAP MM module.",
+    false),
+Question(
+    "In the SAP MM process, the purchase invoice is always recorded before the goods receipt.",
+    false),
+Question(
+    "SAP MM allows management of both physical and virtual warehouse inventories.",
+    true),
+Question(
+    "All master data in SAP MM is stored in the MARA table.",
+    true),
+Question(
+    "SAP S/4HANA MM only supports purchasing activities for small and medium-sized enterprises.",
+    false),
+Question(
+    "A Purchase Order in SAP MM can be created without using a Purchase Requisition.",
+    true),
+Question(
+    "Inventory adjustments in SAP MM are performed using transactions such as MB1A and MB1B.",
+    true),
+Question(
+    "SAP S/4HANA versions no longer support financial reporting based on the MM module.",
+    false),
+Question(
+    "Quality inspection processes cannot be integrated into the Goods Receipt process in SAP MM.",
+    false),
+Question(
+    "SAP MM supports both domestic and international procurement processes.",
+    true),
+Question(
+    "Purchase Requisitions in SAP MM cannot be automatically converted into Purchase Orders.",
+    false),
+Question(
+    "SAP MM allows integration with SAP Ariba to optimize procurement processes.",
+    true),
+Question(
+    "SAP MM does not support long-term contract management processes.",
+    false),
+Question(
+    "Indirect procurement processes cannot be managed in SAP MM.",
+    false),
+Question(
+    "SAP MM allows creating custom reports through tools like SAP Query and SAP Fiori.",
+    true),
+Question(
+    "In SAP MM, tracking goods in transit is not supported.",
+    false),
+Question(
+    "SAP MM allows supplier classification based on their performance.",
+    true),
+Question(
+    "SAP MM supports the management of supply contracts with scheduling agreements.",
+    true),
+
   ];
 
   int score = 0;

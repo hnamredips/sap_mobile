@@ -103,12 +103,7 @@ Future<void> fetchCertificatesAndTopics() async {
                          MaterialPageRoute(
                            builder: (context) => CertificateDetail(
                              certificate['certificateName'], // Lấy tên chứng chỉ từ API
-                             className: 'C_TS462_1',
                              level: certificate['level'] ?? 'Intermediate', // Ví dụ cấp độ, lấy từ API
-                             duration: '5 weeks', // Thời gian dự kiến
-                             location: 'Google Meet', // Địa điểm
-                             fee: '2.500.000', // Chi phí
-                             statusfee: 'vnđ/ khóa',
                              idcertificate: '',
                              topics: getTopicsByCertificateId(certificate['id']), // Truyền danh sách topic area
                            ),
@@ -138,23 +133,13 @@ Future<void> fetchCertificatesAndTopics() async {
 
 class CertificateDetail extends StatelessWidget {
  final String certificate;
- final String className;
  final String level;
- final String duration;
- final String location;
- final String fee;
- final String statusfee;
  final String idcertificate;
  final List<dynamic> topics; // Danh sách Topic Areas liên quan đến chứng chỉ
 
  CertificateDetail(
    this.certificate, {
-   required this.className,
    required this.level,
-   required this.duration,
-   required this.location,
-   required this.fee,
-   required this.statusfee,
    required this.idcertificate,
    required this.topics, // Nhận danh sách topics từ constructor
  });
