@@ -192,7 +192,7 @@ class CertificateDetail extends StatelessWidget {
                  ),
                  SizedBox(height: 20),
                  Text(
-                   'Courses in Certificate',
+                   'Topic Area',
                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                  ),
                  SizedBox(height: 10),
@@ -312,7 +312,3 @@ class CourseItem extends StatelessWidget {
    );
  }
 }
-
-
-
-

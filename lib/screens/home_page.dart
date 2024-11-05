@@ -411,13 +411,13 @@ class _HomePageState extends State<HomePage> {
                                         MaterialPageRoute(
                                             builder: (context) => ModuleMM()),
                                       );
-                                    } else if (category == 'PP') {
+                                    } else if (category == 'NM') {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => ModuleMM()),
                                       );
-                                    } else if (category == 'SD') {
+                                    } else if (category == 'BW') {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
