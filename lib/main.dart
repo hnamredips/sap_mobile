@@ -6,7 +6,6 @@ import 'package:sap_mobile/firebase_options.dart';
 import 'package:sap_mobile/screens/notification_service.dart';
 import 'screens/home_screen.dart';
 import 'screens/home_page.dart';
-import 'screens/courses_page.dart';
 import 'screens/view_all_material.dart';
 import 'screens/schedule_screen.dart';
 import 'screens/profile_screen.dart';
