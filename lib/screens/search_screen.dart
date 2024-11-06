@@ -9,7 +9,8 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, dynamic>> _modules = []; // Danh sách module với id và moduleName
+  List<Map<String, dynamic>> _modules =
+      []; // Danh sách module với id và moduleName
   List<String> _levels = ['Associate', 'Specialist', 'Professional'];
   List<String> _selectedModules = [];
   List<String> _selectedLevels = [];
@@ -47,7 +48,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
       if (response.data != null && response.data['\$values'] != null) {
         setState(() {
-          _certificates = List<Map<String, dynamic>>.from(response.data['\$values']);
+          _certificates =
+              List<Map<String, dynamic>>.from(response.data['\$values']);
           _filteredCertificates = _certificates;
         });
       }
@@ -57,7 +59,8 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   String getModuleNameById(int moduleId) {
-    final module = _modules.firstWhere((mod) => mod['id'] == moduleId, orElse: () => {});
+    final module =
+        _modules.firstWhere((mod) => mod['id'] == moduleId, orElse: () => {});
     return module.isNotEmpty ? module['moduleName'] : 'Unknown';
   }
 
@@ -65,12 +68,15 @@ class _SearchScreenState extends State<SearchScreen> {
     String query = _searchController.text.toLowerCase();
     setState(() {
       _filteredCertificates = _certificates.where((certificate) {
-        bool matchesQuery = certificate['certificateName']!.toLowerCase().contains(query);
-       
+        bool matchesQuery =
+            certificate['certificateName']!.toLowerCase().contains(query);
+
         bool matchesModule = _selectedModules.isEmpty ||
-            certificate['moduleIds']['\$values'].any((id) => _selectedModules.contains(getModuleNameById(id)));
-       
-        bool matchesLevel = _selectedLevels.isEmpty || _selectedLevels.contains(certificate['level']);
+            certificate['moduleIds']['\$values']
+                .any((id) => _selectedModules.contains(getModuleNameById(id)));
+
+        bool matchesLevel = _selectedLevels.isEmpty ||
+            _selectedLevels.contains(certificate['level']);
         return matchesQuery && matchesModule && matchesLevel;
       }).toList();
     });
@@ -78,7 +84,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _selectAllModules() {
     setState(() {
-      _selectedModules = _modules.map((module) => module['moduleName'] as String).toList();
+      _selectedModules =
+          _modules.map((module) => module['moduleName'] as String).toList();
     });
   }
 
@@ -117,7 +124,8 @@ class _SearchScreenState extends State<SearchScreen> {
                     children: [
                       Text(
                         'Filter by Module',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       TextButton(
                         onPressed: () {
@@ -134,13 +142,15 @@ class _SearchScreenState extends State<SearchScreen> {
                     children: _modules.map((module) {
                       return FilterChip(
                         label: Text(module['moduleName']),
-                        selected: _selectedModules.contains(module['moduleName']),
+                        selected:
+                            _selectedModules.contains(module['moduleName']),
                         onSelected: (bool selected) {
                           setModalState(() {
                             if (selected) {
                               _selectedModules.add(module['moduleName']);
                             } else {
-                              _selectedModules.removeWhere((name) => name == module['moduleName']);
+                              _selectedModules.removeWhere(
+                                  (name) => name == module['moduleName']);
                             }
                           });
                         },
@@ -153,7 +163,8 @@ class _SearchScreenState extends State<SearchScreen> {
                     children: [
                       Text(
                         'Filter by Level',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       TextButton(
                         onPressed: () {
@@ -176,7 +187,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             if (selected) {
                               _selectedLevels.add(level);
                             } else {
-                              _selectedLevels.removeWhere((name) => name == level);
+                              _selectedLevels
+                                  .removeWhere((name) => name == level);
                             }
                           });
                         },
@@ -196,7 +208,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         },
                         child: Text('Clear all'),
                         style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 24),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -210,7 +223,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         },
                         child: Text('Apply'),
                         style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 24),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -268,12 +282,27 @@ class _SearchScreenState extends State<SearchScreen> {
                 controller: _searchController,
                 decoration: InputDecoration(
                   labelText: 'Search',
-                  border: OutlineInputBorder(
+                  labelStyle: TextStyle(
+                    color: Colors.black, // Màu chữ "Search" khi chưa được chọn
+                  ),
+                  focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: Color(0xFF275998), // Màu của khung khi được chọn
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: Colors.black, // Màu của khung khi chưa được chọn
+                    ),
                   ),
                   suffixIcon: IconButton(
                     icon: Icon(Icons.search),
                     onPressed: _filterCertificates,
+                  ),
+                  floatingLabelStyle: TextStyle(
+                    color: Color(0xFF275998), // Màu chữ "Search" khi được chọn
                   ),
                 ),
               ),
@@ -282,19 +311,27 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: ListView.builder(
                   itemCount: _filteredCertificates.length,
                   itemBuilder: (context, index) {
-                    String moduleNames = _filteredCertificates[index]['moduleIds']['\$values']
+                    String moduleNames = _filteredCertificates[index]
+                            ['moduleIds']['\$values']
                         .map((id) => getModuleNameById(id))
                         .join(', ');
 
                     return ListTile(
-                      title: Text(_filteredCertificates[index]['certificateName'] ?? ''),
-                      subtitle: Text('Module: $moduleNames, Level: ${_filteredCertificates[index]['level']}'),
+                      title: Text(_filteredCertificates[index]
+                              ['certificateName'] ??
+                          ''),
+                      subtitle: Text(
+                          'Module: $moduleNames, Level: ${_filteredCertificates[index]['level']}'),
                       onTap: () async {
                         // Điều hướng đến CertificateDetail khi nhấn vào module
                         var certificateId = _filteredCertificates[index]['id'];
-                        var certificateName = _filteredCertificates[index]['certificateName'] ?? 'Certificate';
-                        var level = _filteredCertificates[index]['level'] ?? 'Intermediate';
-                        var topics = await fetchTopicsForCertificate(certificateId);
+                        var certificateName = _filteredCertificates[index]
+                                ['certificateName'] ??
+                            'Certificate';
+                        var level = _filteredCertificates[index]['level'] ??
+                            'Intermediate';
+                        var topics =
+                            await fetchTopicsForCertificate(certificateId);
 
                         Navigator.push(
                           context,
@@ -302,7 +339,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             builder: (context) => CertificateDetail(
                               certificateName,
                               level: level,
-                              idcertificate: certificateId.toString(),
+                              idcertificate: certificateId,
                               topics: topics,
                             ),
                           ),

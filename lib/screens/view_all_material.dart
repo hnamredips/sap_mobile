@@ -54,7 +54,11 @@ class _TestPageState extends State<ViewAllMaterial> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Categories (${modules.length} Modules)'),
+        title: Text(
+          'Categories (${modules.length} Modules)',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+        ), // Hiển thị số lượng modules
+        backgroundColor: Colors.white, 
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -103,13 +107,13 @@ class _TestPageState extends State<ViewAllMaterial> {
   Widget buildModuleBox(String moduleName) {
     return Container(
       decoration: BoxDecoration(
-        color: Color(0xFF275998), // Màu nền xanh đậm
+        color: Colors.white, // Màu nền xanh đậm
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5,
-            offset: Offset(0, 3),
+            color: Color(0xFF275998),
+            blurRadius: 2,
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -119,7 +123,7 @@ class _TestPageState extends State<ViewAllMaterial> {
           style: TextStyle(
             fontSize: 22, // Kích thước chữ lớn hơn
             fontWeight: FontWeight.bold,
-            color: Colors.white, // Màu chữ trắng
+            color: Color(0xFF275998), // Màu chữ trắng
           ),
         ),
       ),
