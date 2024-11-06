@@ -17,7 +17,6 @@ class _TestPageState extends State<ViewAllMaterial> {
     fetchModules(); // Gọi API khi màn hình khởi động
   }
 
-
   // Hàm gọi API bằng Dio
   Future<void> fetchModules() async {
     try {
@@ -25,15 +24,12 @@ class _TestPageState extends State<ViewAllMaterial> {
         'https://swdsapelearningapi.azurewebsites.net/api/SapModule/get-all',
       );
 
-
       // In ra toàn bộ dữ liệu nhận được từ API để kiểm tra
       print("Response data: ${response.data}");
-
 
       // Truy cập vào trường $values
       if (response.data != null && response.data['\$values'] != null) {
         print("Modules found: ${response.data['\$values']}"); // In ra danh sách các module
-
 
         // Gán dữ liệu từ '$values' của API vào danh sách modules
         setState(() {
@@ -53,7 +49,6 @@ class _TestPageState extends State<ViewAllMaterial> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +76,7 @@ class _TestPageState extends State<ViewAllMaterial> {
                       children: modules.map((module) {
                         return GestureDetector(
                           onTap: () {
-                            navigateToModule(module['moduleName']); // Sử dụng moduleName để điều hướng
+                            navigateToModule(module['moduleName'], module['id']); // Sử dụng moduleName và id để điều hướng
                           },
                           child: buildModuleBox(module['moduleName']), // Hiển thị moduleName
                         );
@@ -91,20 +86,18 @@ class _TestPageState extends State<ViewAllMaterial> {
     );
   }
 
-
   // Hàm điều hướng đến trang module tương ứng
-  void navigateToModule(String module) {
-    if (module == 'MM') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ModuleMM(), // Điều hướng đến trang module MM
-        ),
-      );
-    }
-    // Thêm các điều kiện cho các module khác
-  }
+  void navigateToModule(String moduleName, int moduleId) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ModuleMM(moduleId: moduleId, moduleName: moduleName), // Truyền cả moduleId và moduleName
+    ),
+  );
+}
 
+    // Thêm các điều kiện cho các module khác nếu cần
+  }
 
   // Hàm tạo widget hiển thị cho mỗi module
   Widget buildModuleBox(String moduleName) {
@@ -132,5 +125,4 @@ class _TestPageState extends State<ViewAllMaterial> {
       ),
     );
   }
-}
 

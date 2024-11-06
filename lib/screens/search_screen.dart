@@ -76,6 +76,159 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  void _selectAllModules() {
+    setState(() {
+      _selectedModules = _modules.map((module) => module['moduleName'] as String).toList();
+    });
+  }
+
+  void _selectAllLevels() {
+    setState(() {
+      _selectedLevels = List.from(_levels);
+    });
+  }
+
+  void _clearAllModules() {
+    setState(() {
+      _selectedModules.clear();
+    });
+  }
+
+  void _clearAllLevels() {
+    setState(() {
+      _selectedLevels.clear();
+    });
+  }
+
+  void _showFilterDrawer(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Filter by Module',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setModalState(() {
+                            _selectAllModules();
+                          });
+                        },
+                        child: Text('Select all'),
+                      ),
+                    ],
+                  ),
+                  Wrap(
+                    spacing: 8.0,
+                    children: _modules.map((module) {
+                      return FilterChip(
+                        label: Text(module['moduleName']),
+                        selected: _selectedModules.contains(module['moduleName']),
+                        onSelected: (bool selected) {
+                          setModalState(() {
+                            if (selected) {
+                              _selectedModules.add(module['moduleName']);
+                            } else {
+                              _selectedModules.removeWhere((name) => name == module['moduleName']);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Filter by Level',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setModalState(() {
+                            _selectAllLevels();
+                          });
+                        },
+                        child: Text('Select all'),
+                      ),
+                    ],
+                  ),
+                  Wrap(
+                    spacing: 8.0,
+                    children: _levels.map((level) {
+                      return FilterChip(
+                        label: Text(level),
+                        selected: _selectedLevels.contains(level),
+                        onSelected: (bool selected) {
+                          setModalState(() {
+                            if (selected) {
+                              _selectedLevels.add(level);
+                            } else {
+                              _selectedLevels.removeWhere((name) => name == level);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          setModalState(() {
+                            _clearAllModules();
+                            _clearAllLevels();
+                          });
+                        },
+                        child: Text('Clear all'),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          foregroundColor: Color(0xFF275998),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          _filterCertificates();
+                          Navigator.pop(context); // Đóng filter modal
+                        },
+                        child: Text('Apply'),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: Color(0xFF275998),
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,6 +250,14 @@ class _SearchScreenState extends State<SearchScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.filter_list, color: Colors.black),
+            onPressed: () {
+              _showFilterDrawer(context); // Hiển thị drawer lọc
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: Padding(
@@ -141,7 +302,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             builder: (context) => CertificateDetail(
                               certificateName,
                               level: level,
-                              idcertificate: '',
+                              idcertificate: certificateId.toString(),
                               topics: topics,
                             ),
                           ),
@@ -158,27 +319,23 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  // Hàm lấy danh sách topics liên quan đến chứng chỉ
   // Hàm lấy danh sách topics liên quan đến chứng chỉ và lọc theo độ dài ký tự
-Future<List<dynamic>> fetchTopicsForCertificate(int certificateId) async {
-  try {
-    var response = await Dio().get(
-      'https://swdsapelearningapi.azurewebsites.net/api/TopicArea/get-all',
-    );
+  Future<List<dynamic>> fetchTopicsForCertificate(int certificateId) async {
+    try {
+      var response = await Dio().get(
+        'https://swdsapelearningapi.azurewebsites.net/api/TopicArea/get-all',
+      );
 
-    if (response.data != null && response.data['\$values'] != null) {
-      return List<Map<String, dynamic>>.from(response.data['\$values'])
-          .where((topic) =>
-              topic['certificateId'] == certificateId &&
-              topic['topicName'] != null &&
-              topic['topicName'].length >= 10 &&
-              topic['topicName'].length <= 35)
-          .toList();
+      if (response.data != null && response.data['\$values'] != null) {
+        return List<Map<String, dynamic>>.from(response.data['\$values'])
+            .where((topic) =>
+                topic['certificateId'] == certificateId &&
+                topic['topicName'] != null)
+            .toList();
+      }
+    } catch (e) {
+      print('Error fetching topics: $e');
     }
-  } catch (e) {
-    print('Error fetching topics: $e');
+    return [];
   }
-  return [];
-}
-
 }
