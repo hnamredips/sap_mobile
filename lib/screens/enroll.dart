@@ -5,6 +5,10 @@ import 'package:intl/intl.dart';
 import 'package:sap_mobile/screens/purchase_overview.dart';
 
 class EnrollPage extends StatefulWidget {
+  final int certificateId;
+
+  const EnrollPage({Key? key, required this.certificateId}) : super(key: key);
+
   @override
   _EnrollPageState createState() => _EnrollPageState();
 }
@@ -34,40 +38,30 @@ class _EnrollPageState extends State<EnrollPage> {
   Future<void> fetchData() async {
     print("Starting fetchData...");
     try {
-      // Gọi API để lấy tất cả certificate
-      final responseCertificates = await http.get(
-        Uri.parse('https://swdsapelearningapi.azurewebsites.net/api/Certificate/get-all'),
-      );
-
       // Gọi API để lấy tất cả course
       final responseCourses = await http.get(
-        Uri.parse('https://swdsapelearningapi.azurewebsites.net/api/Course/get-all'),
+        Uri.parse('https://swdsapelearningapi.azurewebsites.net/api/Course/get-all?PageSize=50'),
       );
 
-      if (responseCertificates.statusCode == 200 && responseCourses.statusCode == 200) {
-        final certificatesData = json.decode(responseCertificates.body);
+      if (responseCourses.statusCode == 200) {
         final coursesData = json.decode(responseCourses.body);
 
-        // Truy cập vào mảng $values để lấy danh sách certificate và course
-        final certificates = certificatesData['\$values'] as List<dynamic>;
+        // Truy cập vào mảng $values để lấy danh sách course
         final courses = coursesData['\$values'] as List<dynamic>;
 
-        // Lấy tất cả các certificateID từ danh sách certificates
-        final certificateIDs = certificates.map((cert) => cert['id']).toSet();
-
-        // Lọc các khóa học có certificateId trùng khớp với một certificateId trong danh sách certificates
-        List<dynamic> filteredCourses = courses.where((course) => course['certificateId'] != null && certificateIDs.contains(course['certificateId'])).toList();
+        // Lọc các khóa học theo certificateId được chọn
+        List<dynamic> filteredCourses = courses.where((course) =>
+            course['certificateId'] == widget.certificateId &&
+            course['status'] == true).toList();
 
         // Phân loại online và offline
         setState(() {
           onlineClasses = filteredCourses
-              .where((classData) =>
-                  classData['mode'] == "online" && classData['status'] == true)
+              .where((classData) => classData['mode'] == "online")
               .toList();
 
           offlineClasses = filteredCourses
-              .where((classData) =>
-                  classData['mode'] == "offline" && classData['status'] == true)
+              .where((classData) => classData['mode'] == "offline")
               .toList();
         });
 
@@ -82,12 +76,12 @@ class _EnrollPageState extends State<EnrollPage> {
   }
 
   String formatDate(String date) {
-    return date.substring(0, 10); // Lấy 9 ký tự đầu tiên (ngày tháng năm)
+    return date.substring(0, 10); // Lấy 10 ký tự đầu tiên (ngày tháng năm)
   }
 
   String formatCurrency(int price) {
     final format = NumberFormat('#,###', 'en_US');
-    return format.format(price); // Thêm dấu chấm phân cách hàng nghìn
+    return format.format(price); // Thêm dấu phẩy phân cách hàng nghìn
   }
 
   @override
@@ -194,7 +188,7 @@ class _EnrollPageState extends State<EnrollPage> {
                       ),
                     ],
                   ] else if (!showOnline && offlineClasses.isNotEmpty) ...[
-                    for (var classData in offlineClasses) ...[
+                    for                     (var classData in offlineClasses) ...[
                       ClassCard(
                         title: classData['courseName'] ?? 'Không có tên',
                         certificateName: classData['certificateName'] ?? 'Không có thông tin',
@@ -450,3 +444,4 @@ class ClassCard extends StatelessWidget {
     );
   }
 }
+

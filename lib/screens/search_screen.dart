@@ -141,7 +141,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             builder: (context) => CertificateDetail(
                               certificateName,
                               level: level,
-                              idcertificate: '',
+                              idcertificate: certificateId,
                               topics: topics,
                             ),
                           ),

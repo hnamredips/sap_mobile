@@ -1,4 +1,3 @@
-
 import 'package:sap_mobile/screens/home_screen.dart';
 import 'package:sap_mobile/screens/schedule_screen.dart';
 import 'package:flutter/material.dart';
@@ -297,7 +296,15 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Purchase Flow'),
+        backgroundColor: Colors.white,
+        title: Text(
+          'Purchase',
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -416,6 +423,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               elevation: 4,
+              color: Colors.white, // Màu nền trắng
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
@@ -436,6 +444,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               elevation: 4,
+              color: Colors.white, // Màu nền trắng
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
@@ -512,6 +521,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
   }) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
+      color: Colors.white, // Màu nền trắng
       child: ListTile(
         title: Text(label,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),

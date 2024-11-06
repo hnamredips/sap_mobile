@@ -84,7 +84,8 @@ class MyApp extends StatelessWidget {
       title: 'My App', // Tên ứng dụng
       navigatorKey: navigatorKey,
       theme: ThemeData(
-        primarySwatch: Colors.blue, // Chủ đề chính với màu xanh dương
+        primarySwatch: Colors.blue, 
+        scaffoldBackgroundColor: Colors.white,// Chủ đề chính với màu xanh dương
       ),
       home: MainScreen(),
       routes: {
@@ -104,7 +105,7 @@ class MyApp extends StatelessWidget {
           phoneNumber: '123-456-7890',
           gender: 'Male',
         ), // Thêm route cho EditProfileScreen
-        '/change-password': (context) => ChangePasswordScreen(), // Thêm route cho ChangePasswordScreen
+        '/change-password': (context) => ChangePasswordScreen(),
       },
     );
   }

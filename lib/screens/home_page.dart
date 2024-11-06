@@ -69,7 +69,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  
   // Hàm gọi API và lấy dữ liệu top 3 certificates
   Future<void> _fetchTopCertificates() async {
     try {
@@ -169,119 +168,121 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchEnrolledCertificates() async {
-  try {
-    print('Fetching enrolled certificates...');
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? currentEmail = prefs.getString('currentEmail');
+    try {
+      print('Fetching enrolled certificates...');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? currentEmail = prefs.getString('currentEmail');
 
-    if (currentEmail == null) {
-      print('Không tìm thấy email đăng nhập. Vui lòng đăng nhập lại.');
-      setState(() {
-        isLoadingEnrolled = false;
-      });
-      return;
-    }
-
-    var userResponse = await Dio().get(
-      'https://swdsapelearningapi.azurewebsites.net/api/User/get-all-student',
-    );
-
-    if (userResponse.statusCode == 200) {
-      var userData = userResponse.data;
-
-      if (userData.containsKey('\$values')) {
-        for (var user in userData['\$values']) {
-          if (user['email'] == currentEmail) {
-            currentUserId = user['id'];
-            currentUserFullname = user['fullname'];
-            await prefs.setString('currentUserId', currentUserId!);
-            print('UserID: $currentUserId'); // In ra UserID vào console
-            setState(() {
-              currentUserFullname = user['fullname'];
-            });
-            break;
-          }
-        }
-      }
-
-      if (currentUserId == null) {
-        print("User ID not found in user data.");
+      if (currentEmail == null) {
+        print('Không tìm thấy email đăng nhập. Vui lòng đăng nhập lại.');
         setState(() {
           isLoadingEnrolled = false;
         });
         return;
       }
 
-      var enrollmentResponse = await Dio().get(
-        'https://swdsapelearningapi.azurewebsites.net/api/Enrollment/get-all',
+      var userResponse = await Dio().get(
+        'https://swdsapelearningapi.azurewebsites.net/api/User/get-all-student',
       );
 
-      if (enrollmentResponse.statusCode == 200) {
-        var enrollmentsData = enrollmentResponse.data['\$values'];
-        var confirmedEnrollments = enrollmentsData.where((enrollment) {
-          return enrollment['userId'] == currentUserId &&
-              enrollment['status'] == 'Success';
-        }).toList();
+      if (userResponse.statusCode == 200) {
+        var userData = userResponse.data;
 
-        var courseResponse = await Dio().get(
-          'https://swdsapelearningapi.azurewebsites.net/api/Course/get-all',
+        if (userData.containsKey('\$values')) {
+          for (var user in userData['\$values']) {
+            if (user['email'] == currentEmail) {
+              currentUserId = user['id'];
+              currentUserFullname = user['fullname'];
+              await prefs.setString('currentUserId', currentUserId!);
+              print('UserID: $currentUserId'); // In ra UserID vào console
+              setState(() {
+                currentUserFullname = user['fullname'];
+              });
+              break;
+            }
+          }
+        }
+
+        if (currentUserId == null) {
+          print("User ID not found in user data.");
+          setState(() {
+            isLoadingEnrolled = false;
+          });
+          return;
+        }
+
+        var enrollmentResponse = await Dio().get(
+          'https://swdsapelearningapi.azurewebsites.net/api/Enrollment/get-all?PageSize=50',
         );
 
-        if (courseResponse.statusCode == 200 &&
-            courseResponse.data.containsKey('\$values')) {
-          var courseData = courseResponse.data['\$values'];
-          Map<int, String> courseMap = {
-            for (var course in courseData) course['id']: course['courseName']
-          };
+        if (enrollmentResponse.statusCode == 200) {
+          var enrollmentsData = enrollmentResponse.data['\$values'];
+          var confirmedEnrollments = enrollmentsData.where((enrollment) {
+            return enrollment['userId'] == currentUserId &&
+                enrollment['status'] == 'Success';
+          }).toList();
 
-          setState(() {
-  enrolledCertificates = confirmedEnrollments.map((enrollment) {
-    final courseId = enrollment['courseId'];
-    final courseName = courseMap[courseId] ?? 'Unknown Course';
-    final certificateName = certificateNames[courseNames[courseId]] ?? courseName;
+          var courseResponse = await Dio().get(
+            'https://swdsapelearningapi.azurewebsites.net/api/Course/get-all?PageSize=50',
+          );
 
-    return {
-      'courseName': courseName,
-      'certificateName': certificateName,
-    };
-  }).toList();
-  isLoadingEnrolled = false;
-});
+          if (courseResponse.statusCode == 200 &&
+              courseResponse.data.containsKey('\$values')) {
+            var courseData = courseResponse.data['\$values'];
+            Map<int, String> courseMap = {
+              for (var course in courseData) course['id']: course['courseName']
+            };
 
+            setState(() {
+              enrolledCertificates = confirmedEnrollments.map((enrollment) {
+                final courseId = enrollment['courseId'];
+                final courseName = courseMap[courseId] ?? 'Unknown Course';
+                final certificateName =
+                    certificateNames[courseNames[courseId]] ?? courseName;
+
+                return {
+                  'courseName': courseName,
+                  'certificateName': certificateName,
+                };
+              }).toList();
+              isLoadingEnrolled = false;
+            });
+          } else {
+            print("Error fetching courses data.");
+            setState(() {
+              isLoadingEnrolled = false;
+            });
+          }
         } else {
-          print("Error fetching courses data.");
+          print("Error fetching enrollments data.");
           setState(() {
             isLoadingEnrolled = false;
           });
         }
       } else {
-        print("Error fetching enrollments data.");
+        print("Error fetching user data.");
         setState(() {
           isLoadingEnrolled = false;
         });
       }
-    } else {
-      print("Error fetching user data.");
+    } catch (e) {
+      print('Error fetching enrolled certificates: $e');
       setState(() {
         isLoadingEnrolled = false;
       });
     }
-  } catch (e) {
-    print('Error fetching enrolled certificates: $e');
-    setState(() {
-      isLoadingEnrolled = false;
-    });
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false, // Xóa mũi tên quay lại
-        title: Text("Hi, ${currentUserFullname ?? ''}"),
+        title: Text(
+        "Hi, ${currentUserFullname ?? ''}",
+        style: TextStyle(color: Colors.black), // Đổi màu chữ thành màu đen để phù hợp với nền trắng
+      ),
+      backgroundColor: Colors.white, // Đặt màu nền của AppBar thành màu trắng
         actions: [
           IconButton(
             icon: Icon(Icons.notifications),
@@ -308,57 +309,31 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Khung tổng thể cho "Lịch học hôm nay" và các mục lịch học
-              Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(
-                      255, 225, 224, 224), // Màu nền nhạt cho khung tổng thể
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Schedule Header
-                    Container(
-                      padding: EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Study schedule',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 16),
+              //SizedBox(height: 10),
 
-                    // Schedule Items
-                    Column(
-                      children: [
-                        buildScheduleItem(
-                          'SAP311',
-                          'Online 514',
-                          '12:30 - 14:45',
-                          true,
-                        ),
-                        SizedBox(height: 10),
-                        buildScheduleItem(
-                          'SAP323',
-                          'Offline 611',
-                          '18:30 - 20:00',
-                          false,
-                        ),
-                      ],
-                    ),
-                  ],
+            // Thêm hình ảnh phía dưới tiêu đề "Hi, [Tên người dùng]"
+            Container(
+              width: double.infinity,
+              height: 150, // Chiều cao của ảnh
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  'assets/images/image_homepage(1).png', // Đường dẫn đến ảnh trong assets
+                  fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(height: 10),
+            ),
+            SizedBox(height: 20),
 
               // Categories Slider with "View All" button
               Row(
@@ -366,7 +341,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Text(
                     'Categories',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 33, 77, 130), fontWeight: FontWeight.bold, ),
                   ),
                   InkWell(
                     onTap: () {
@@ -379,8 +354,9 @@ class _HomePageState extends State<HomePage> {
                     child: Text(
                       'View All',
                       style: TextStyle(
-                        color: Colors.blue,
+                        color: Color(0xFF275998),  
                         fontSize: 14,
+                        fontWeight: FontWeight.bold
                       ),
                     ),
                   ),
@@ -430,13 +406,15 @@ class _HomePageState extends State<HomePage> {
                                     margin:
                                         EdgeInsets.symmetric(horizontal: 5.0),
                                     decoration: BoxDecoration(
-                                      color: Color(0xFF275998),
+                                      color: Colors.white,
                                       borderRadius: BorderRadius.circular(8),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black12,
-                                          blurRadius: 5,
-                                          offset: Offset(0, 3),
+                                          color: const Color.fromARGB(31, 18, 17, 17), // Tăng độ mờ đục của màu đen
+                                          blurRadius:
+                                              7, // Tăng độ mờ của shadow
+                                          offset: Offset(0,
+                                              5), // Điều chỉnh vị trí của shadow
                                         ),
                                       ],
                                     ),
@@ -445,7 +423,9 @@ class _HomePageState extends State<HomePage> {
                                         category,
                                         style: TextStyle(
                                           fontSize: 24,
-                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                      color: Color.fromRGBO(58, 57, 57, 1.0),
+
                                         ),
                                       ),
                                     ),
@@ -459,7 +439,7 @@ class _HomePageState extends State<HomePage> {
 
               // Top Certificate List
               Text('Top Certificates',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 33, 77, 130), fontWeight: FontWeight.bold)),
               isLoadingCertificates
                   ? Center(child: CircularProgressIndicator())
                   : topCertificates.isEmpty
@@ -472,14 +452,14 @@ class _HomePageState extends State<HomePage> {
                               child: SizedBox(
                                 width: double.infinity,
                                 child: Card(
-                                  color: Color(0xFF275998),
+                                  color: Colors.white,
                                   margin: EdgeInsets.all(4),
                                   child: Padding(
                                     padding: EdgeInsets.all(16),
                                     child: Text(
                                       certificate['certificateName'],
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: Colors.black,
                                         fontSize: 16,
                                       ),
                                     ),
@@ -494,7 +474,7 @@ class _HomePageState extends State<HomePage> {
 
               // Enrolled Certificate List
               Text('Enrolled Certificates',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 33, 77, 130),  fontWeight: FontWeight.bold)),
               SizedBox(height: 6),
               isLoadingEnrolled
                   ? Center(child: CircularProgressIndicator())
@@ -508,14 +488,14 @@ class _HomePageState extends State<HomePage> {
                               child: SizedBox(
                                 width: double.infinity,
                                 child: Card(
-                                  color: Color(0xFF275998),
+                                  color: Colors.white,
                                   margin: EdgeInsets.all(4),
                                   child: Padding(
                                     padding: EdgeInsets.all(16),
                                     child: Text(
                                       enrollment['certificateName'],
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: Colors.black,
                                         fontSize: 16,
                                       ),
                                     ),

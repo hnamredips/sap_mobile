@@ -3,6 +3,8 @@ import 'package:sap_mobile/screens/home_page.dart';
 import 'package:sap_mobile/screens/view_all_material.dart';
 import 'schedule_screen.dart';
 import 'profile_screen.dart';
+import 'courses_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
 
@@ -17,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     HomePage(),
+    CoursesScreen(),
     ScheduleScreen(),
     ProfileScreen(),
   ];
@@ -50,6 +53,10 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Homepage',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'Courses',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.schedule),
             label: 'Schedule',
           ),
@@ -59,7 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Color(0xFF085A9D),// Màu cho mục được chọn
+        unselectedItemColor: Color(0xFF2A282D), // Màu cho mục không được chọn
+        backgroundColor: Colors.white,
+        type: BottomNavigationBarType.fixed,
         onTap: _onItemTapped,
       ),
     );
