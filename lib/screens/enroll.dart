@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -340,7 +339,7 @@ class ClassCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
-        width: 350,
+        width: 400,
         height: 200,
         child: Card(
           shape: RoundedRectangleBorder(

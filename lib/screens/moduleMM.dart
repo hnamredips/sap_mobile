@@ -260,7 +260,7 @@ class CertificateDetail extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '$idcertificate',
+                    '',
                     style: TextStyle(fontSize: 14),
                   ),
                   SizedBox(height: 20),

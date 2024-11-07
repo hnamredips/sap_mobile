@@ -483,13 +483,13 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 16),
 
               // Enrolled Certificate List
-              Text('Enrolled Certificates',
+              Text('Enrolled Courses',
                   style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 33, 77, 130),  fontWeight: FontWeight.bold)),
               SizedBox(height: 6),
               isLoadingEnrolled
                   ? Center(child: CircularProgressIndicator())
                   : enrolledCertificates.isEmpty
-                      ? Center(child: Text("No enrolled certificates found"))
+                      ? Center(child: Text("No enrolled courses found"))
                       : Column(
                           children: enrolledCertificates.map((enrollment) {
                             return Padding(
