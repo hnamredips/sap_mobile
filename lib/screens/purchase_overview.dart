@@ -105,96 +105,111 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
   }
 
   Future<void> fetchCourseId() async {
-    try {
-      final response = await Dio().get(
-          'https://swdsapelearningapi.azurewebsites.net/api/Course/get-all');
+  try {
+    final response = await Dio().get(
+        'https://swdsapelearningapi.azurewebsites.net/api/Course/get-all');
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data is Map<String, dynamic> && data.containsKey('\$values')) {
-          final courses = data['\$values'] as List<dynamic>;
+    if (response.statusCode == 200) {
+      final data = response.data;
+      if (data is Map<String, dynamic> && data.containsKey('\$values')) {
+        final courses = data['\$values'] as List<dynamic>;
 
-          final course = courses.firstWhere(
-            (c) => c['certificateName'] == widget.iddcertificate,
-            orElse: () => null,
-          );
+        final course = courses.firstWhere(
+          (c) => c['certificateName'] == widget.iddcertificate,
+          orElse: () => null,
+        );
 
-          if (course != null) {
-            setState(() {
-              courseId = course['id'];
-            });
-            print(
-                "Fetched courseId: $courseId for certificate: ${widget.iddcertificate}");
-          } else {
-            setState(() {
-              courseId = null;
-            });
-            print("No course found for certificate: ${widget.iddcertificate}");
-          }
+        if (course != null) {
+          setState(() {
+            courseId = course['id'];
+          });
+          print("Fetched courseId: $courseId for certificate: ${widget.iddcertificate}");
         } else {
-          print("Unexpected data format from Course API");
+          // Set default courseId if no course is found
+          setState(() {
+            courseId = 0; // or any other default value
+          });
+          print("No course found for certificate: ${widget.iddcertificate}, setting default courseId.");
         }
       } else {
-        throw Exception('Failed to load course data');
+        print("Unexpected data format from Course API");
       }
-    } catch (e) {
-      print('Error fetching courseId: $e');
+    } else {
+      throw Exception('Failed to load course data');
     }
+  } catch (e) {
+    print('Error fetching courseId: $e');
+    setState(() {
+      courseId = 0; // Set default value on error
+    });
   }
+}
+
 
   Future<void> createEnrollment() async {
-    try {
-      final enrollmentPrice =
-          int.tryParse(widget.price.replaceAll(',', '')) ?? -1;
-      if (enrollmentPrice == -1 ||
-          currentUserId == null ||
-          widget.courseId == null) {
-        print("Error: Missing userId, courseId, or price cannot be converted.");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text('Đăng ký không thành công. Vui lòng kiểm tra thông tin.'),
-          ),
-        );
-        return;
-      }
+  // In giá trị của `price` để kiểm tra định dạng ban đầu
+  print("Original price string: ${widget.price}");
 
-      final requestData = {
-        "userId": currentUserId,
-        "courseId": widget.courseId,
-        "enrollmentPrice": enrollmentPrice,
-      };
+  // Làm sạch các ký tự không mong muốn khỏi `price`
+  final cleanPrice = widget.price.replaceAll(RegExp(r'[^0-9]'), '');
+  final enrollmentPrice = int.tryParse(cleanPrice) ?? -1;
 
-      print("Sending enrollment request with data: $requestData");
+  // In giá trị sau khi làm sạch để xác nhận
+  print("Cleaned price: $cleanPrice, Parsed enrollmentPrice: $enrollmentPrice");
 
-      final response = await Dio().post(
-        'https://swdsapelearningapi.azurewebsites.net/api/Enrollment/create',
-        data: requestData,
-      );
+  // In các thông tin quan trọng để kiểm tra lỗi nếu có
+  print("Attempting to create enrollment with data:");
+  print("UserId: $currentUserId, CourseId: ${widget.courseId}, EnrollmentPrice: $enrollmentPrice");
 
-      if (response.statusCode == 201) {
-        enrollmentId = response.data['id'].toString();
-        print("Enrollment created successfully with ID: $enrollmentId");
+  if (enrollmentPrice == -1 || currentUserId == null || widget.courseId == null) {
+    print("Error: Missing userId, courseId, or price cannot be converted.");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Đăng ký không thành công. Vui lòng kiểm tra thông tin.'),
+      ),
+    );
+    return;
+  }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Đăng ký khóa học ${widget.className} thành công.'),
-          ),
-        );
+  final requestData = {
+    "userId": currentUserId,
+    "courseId": widget.courseId,
+    "enrollmentPrice": enrollmentPrice,
+  };
 
-        await createPayment(enrollmentId!);
-      } else {
-        throw Exception('Failed to create enrollment');
-      }
-    } catch (e) {
-      print('Error creating enrollment: $e');
+  try {
+    print("Sending enrollment request with data: $requestData");
+
+    final response = await Dio().post(
+      'https://swdsapelearningapi.azurewebsites.net/api/Enrollment/create',
+      data: requestData,
+    );
+
+    if (response.statusCode == 201) {
+      enrollmentId = response.data['id'].toString();
+      print("Enrollment created successfully with ID: $enrollmentId");
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Đăng ký không thành công. Vui lòng thử lại.'),
+          content: Text('Đăng ký khóa học ${widget.className} thành công.'),
         ),
       );
+
+      await createPayment(enrollmentId!);
+    } else {
+      throw Exception('Failed to create enrollment');
     }
+  } catch (e) {
+    print('Error creating enrollment: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Đăng ký không thành công. Vui lòng thử lại.'),
+      ),
+    );
   }
+}
+
+
 
   Future<void> createPayment(String enrollmentId) async {
     try {
@@ -272,7 +287,7 @@ class _CombinedPurchasePageState extends State<CombinedPurchasePage> {
             await Future.delayed(Duration(seconds: 2));
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                  builder: (context) => HomeScreen(initialIndex: 1)),
+                  builder: (context) => HomeScreen(initialIndex: 2)),
             );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -565,3 +580,4 @@ class PaymentWebView extends StatelessWidget {
     );
   }
 }
+
